@@ -1,4 +1,4 @@
-# PlexOnArm
+# Plex On Tauri
 
 <p align="center">
   <img src="src-tauri/icons/128x128.png" alt="PlexOnArm Logo" width="128" height="128">
