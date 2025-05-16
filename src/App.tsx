@@ -1,50 +1,109 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
+import { useEffect, useState } from "react";
+import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import "./App.css";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
+  useEffect(() => {
+    const initWebview = async () => {
+      try {
+        setIsLoading(true);
+
+        // Create a new webview window that loads Plex
+        const webview = new WebviewWindow('plex-webview', {
+          url: 'https://app.plex.tv/desktop',
+          title: 'Plex on Arm',
+          width: 1280,
+          height: 800,
+          center: true,
+          focus: true
+        });
+
+        // Listen for window events
+        webview.once('tauri://created', () => {
+          console.log('Webview window created');
+          setIsLoading(false);
+
+          // Register the fullscreen listener with our Rust backend
+          invoke('register_fullscreen_listener', { window: webview.label })
+            .catch((e: Error) => console.error('Failed to register fullscreen listener:', e));
+
+          // Since we can't directly inject JavaScript into the webview in Tauri v2,
+          // we'll use the resize event to detect fullscreen changes
+
+          // Listen for the webview window's resize event
+          listen('tauri://resize', async () => {
+            try {
+              // Check if the webview is in fullscreen mode
+              const isFullscreen = await invoke('is_fullscreen', { window: webview.label }) as boolean;
+              console.log('Webview fullscreen state:', isFullscreen);
+
+              // Sync the fullscreen state with our main window
+              await invoke('toggle_fullscreen', {
+                window: 'main', // Main window label
+                fullscreen: isFullscreen
+              });
+            } catch (e) {
+              console.error('Failed to handle fullscreen change:', e);
+            }
+          }).then(unlisten => {
+            // Store the unlisten function for cleanup
+            return () => {
+              unlisten();
+            };
+          }).catch(e => console.error('Failed to listen for resize events:', e));
+        });
+
+        webview.once('tauri://error', (event: { payload: unknown }) => {
+          console.error('Error creating webview window:', event.payload);
+          setError('Failed to create Plex window');
+          setIsLoading(false);
+        });
+
+        // The webview will be closed automatically when the app closes
+        // No need to explicitly close it in the cleanup function
+        return () => {};
+      } catch (err: unknown) {
+        console.error('Failed to initialize webview:', err);
+        setError(`Failed to initialize Plex: ${err instanceof Error ? err.message : String(err)}`);
+        setIsLoading(false);
+      }
+    };
+
+    initWebview();
+  }, []);
+
+  // Show loading state or error
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading Plex...</p>
+      </div>
+    );
   }
 
-  return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
-
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+  if (error) {
+    return (
+      <div className="error-container">
+        <h2>Error Loading Plex</h2>
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()}>Retry</button>
       </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+    );
+  }
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
+  // The webview is created in a separate window, so we just show a message
+  return (
+    <div className="success-container">
+      <h2>Plex is running in a separate window</h2>
+      <p>If the Plex window was closed, you can reopen it by refreshing this page.</p>
+      <button onClick={() => window.location.reload()}>Reopen Plex</button>
+    </div>
   );
 }
 

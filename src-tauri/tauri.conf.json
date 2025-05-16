@@ -12,13 +12,47 @@
   "app": {
     "windows": [
       {
-        "title": "plexonarm",
+        "title": "Plex on Arm",
         "width": 800,
         "height": 600
       }
     ],
     "security": {
-      "csp": null
+      "csp": {
+        "default-src": [
+          "'self'",
+          "https://app.plex.tv"
+        ],
+        "img-src": [
+          "'self'",
+          "https://*.plex.tv",
+          "data:",
+          "blob:"
+        ],
+        "media-src": [
+          "'self'",
+          "https://*.plex.tv",
+          "blob:"
+        ],
+        "connect-src": [
+          "'self'",
+          "https://*.plex.tv",
+          "wss://*.plex.tv"
+        ],
+        "script-src": [
+          "'self'",
+          "https://*.plex.tv"
+        ],
+        "style-src": [
+          "'self'",
+          "https://*.plex.tv",
+          "'unsafe-inline'"
+        ],
+        "frame-src": [
+          "'self'",
+          "https://*.plex.tv"
+        ]
+      }
     }
   },
   "bundle": {
