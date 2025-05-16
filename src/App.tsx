@@ -49,7 +49,7 @@ function App() {
       // Configure the current window to load Plex
       const mainWindow = await WebviewWindow.getByLabel('main');
       if (mainWindow) {
-        await mainWindow.setTitle('Plex on Arm');
+        await mainWindow.setTitle('Plex on Tauri');
         // Set size and center are handled by the window configuration
       }
 
