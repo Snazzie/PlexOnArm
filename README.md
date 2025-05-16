@@ -9,9 +9,10 @@ A lightweight, cross-platform desktop application that provides a dedicated Plex
 ## Features
 
 - **Native Desktop Experience**: Serves Plex Web Client in a native desktop application.
-- **No Skipping Bug**: Fixes skipping issue on windows arm devices.
+- **Fixes Plex Windows Arm's annoying bugs**: No more skipping and fluid UI!
 - **Optimized Performance**: Built with Tauri for minimal resource usage and fast startup times.
 - **Change Plex Url**: Change the Plex URL to any Plex server you want. i.e tailscale VPN or local network
+
 ## Installation
 
 ### Pre-built Binaries
