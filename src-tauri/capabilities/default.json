@@ -18,6 +18,7 @@
     "core:menu:default",
     "core:tray:default",
     "core:window:allow-set-title",
-    "store:default"
+    "store:default",
+    "window-state:default"
   ]
 }

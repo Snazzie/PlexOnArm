@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { load } from "@tauri-apps/plugin-store";
+import { restoreStateCurrent, StateFlags } from '@tauri-apps/plugin-window-state';
 import "./App.css";
 
 function App() {
@@ -9,22 +10,40 @@ function App() {
   const [showConfirmation, setShowConfirmation] = useState(true);
   const [plexUrl, setPlexUrl] = useState('https://app.plex.tv/desktop');
 
-  // Load saved URL from store when component mounts
+  // Load saved URL from store and restore window state when component mounts
   useEffect(() => {
-    const loadSavedUrl = async () => {
+    const initialize = async () => {
       try {
+        // Load saved URL
         const store = await load('settings.json');
         const savedUrl = await store.get<string>('plexUrl');
         if (savedUrl) {
           setPlexUrl(savedUrl);
         }
+
+        // Restore window state (size and position)
+        await restoreStateCurrent(StateFlags.ALL);
+
+        // Make the window visible after restoring state
+        const mainWindow = await WebviewWindow.getByLabel('main');
+        if (mainWindow) {
+          await mainWindow.show();
+        }
       } catch (err) {
-        console.error('Failed to load saved URL:', err);
-        // Continue with default URL if loading fails
+        console.error('Failed during initialization:', err);
+        // Make window visible even if there was an error
+        try {
+          const mainWindow = await WebviewWindow.getByLabel('main');
+          if (mainWindow) {
+            await mainWindow.show();
+          }
+        } catch (showErr) {
+          console.error('Failed to show window:', showErr);
+        }
       }
     };
 
-    loadSavedUrl();
+    initialize();
   }, []);
 
   const saveUrl = async (url: string) => {
@@ -43,13 +62,19 @@ function App() {
       setIsLoading(true);
       setShowConfirmation(false);
 
+      // Save URL to settings
       await saveUrl(plexUrl);
 
+      // Get main window and set title
       const mainWindow = await WebviewWindow.getByLabel('main');
       if (mainWindow) {
         await mainWindow.setTitle('Plex On Tauri');
       }
 
+      // Save window state before navigating
+      await restoreStateCurrent(StateFlags.ALL);
+
+      // Navigate to Plex
       window.location.href = plexUrl;
 
       console.log('Navigated to Plex in the current window');
