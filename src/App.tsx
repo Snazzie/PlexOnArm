@@ -71,7 +71,7 @@ function App() {
   if (showConfirmation) {
     return (
       <div className="confirmation-container">
-        <h2>Welcome to Plex on Arm</h2>
+        <h2>Welcome to Plex on Tauri</h2>
         <p>This application will load Plex in the current window.</p>
         <p>You can customize the Plex URL below:</p>
 
