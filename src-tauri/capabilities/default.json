@@ -10,6 +10,14 @@
     "opener:default",
     "core:webview:default",
     "core:webview:allow-create-webview-window",
-    "core:window:default"
+    "core:window:default",
+    "core:path:default",
+    "core:event:default",
+    "core:window:default",
+    "core:app:default",
+    "core:resources:default",
+    "core:menu:default",
+    "core:tray:default",
+    "core:window:allow-set-title"
   ]
 }

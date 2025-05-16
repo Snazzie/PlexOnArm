@@ -32,30 +32,15 @@ function App() {
           invoke('register_fullscreen_listener', { window: webview.label })
             .catch((e: Error) => console.error('Failed to register fullscreen listener:', e));
 
+          listen('fullscreenchange', (event: { payload: unknown }) => {
+            console.log('Received fullscreenchange event from Rust:', event.payload);
+          })
+            .catch((e: Error) => console.error('Failed to register fullscreen listener:', e));
+
           // Since we can't directly inject JavaScript into the webview in Tauri v2,
           // we'll use the resize event to detect fullscreen changes
 
           // Listen for the webview window's resize event
-          listen('tauri://resize', async () => {
-            try {
-              // Check if the webview is in fullscreen mode
-              const isFullscreen = await invoke('is_fullscreen', { window: webview.label }) as boolean;
-              console.log('Webview fullscreen state:', isFullscreen);
-
-              // Sync the fullscreen state with our main window
-              await invoke('toggle_fullscreen', {
-                window: 'main', // Main window label
-                fullscreen: isFullscreen
-              });
-            } catch (e) {
-              console.error('Failed to handle fullscreen change:', e);
-            }
-          }).then(unlisten => {
-            // Store the unlisten function for cleanup
-            return () => {
-              unlisten();
-            };
-          }).catch(e => console.error('Failed to listen for resize events:', e));
         });
 
         webview.once('tauri://error', (event: { payload: unknown }) => {
