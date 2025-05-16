@@ -23,11 +23,16 @@ pub fn run() {
         // Send a message to the Tauri app using the invoke system
         try {
           if (window.__TAURI_INTERNALS__) {
-            // Directly invoke the toggle_fullscreen command
+            // Get the current window label
+            const windowLabel = window.__TAURI_INTERNALS__.metadata.currentWindow.label;
+            console.log('Current window label:', windowLabel);
+
+            // Directly invoke the toggle_fullscreen command with window label
             window.__TAURI_INTERNALS__.invoke('toggle_fullscreen', {
-              isFullscreen: isFullscreen
+              isFullscreen: isFullscreen,
+              windowLabel: windowLabel
             });
-            console.log('Invoked toggle_fullscreen with state:', isFullscreen);
+            console.log('Invoked toggle_fullscreen with state:', isFullscreen, 'for window:', windowLabel);
           } else {
             console.error('__TAURI_INTERNALS__ is not available');
           }

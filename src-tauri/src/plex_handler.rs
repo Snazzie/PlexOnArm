@@ -5,23 +5,31 @@ use tauri::{AppHandle, Listener, Manager, Runtime, State, Window};
 pub fn toggle_fullscreen<R: Runtime>(
     app_handle: AppHandle<R>,
     is_fullscreen: bool,
+    window_label: Option<String>,
 ) -> Result<(), String> {
-    println!("Setting fullscreen state to: {}", is_fullscreen);
+    println!(
+        "Setting fullscreen state to: {} for window: {:?}",
+        is_fullscreen, window_label
+    );
 
-    // Try to get the main window or the first available window
-    let window = app_handle
-        .get_webview_window("main")
-        .or_else(|| app_handle.get_webview_window("plex-webview"))
-        .or_else(|| {
-            // Get the first window if specific windows not found
-            let windows = app_handle.webview_windows();
-            if !windows.is_empty() {
-                windows.values().next().cloned()
-            } else {
-                None
-            }
-        })
-        .ok_or_else(|| "No window found".to_string())?;
+    // Try to get the specific window that emitted the event, or fall back to default windows
+    let window = if let Some(label) = window_label {
+        app_handle.get_webview_window(&label)
+    } else {
+        None
+    }
+    .or_else(|| app_handle.get_webview_window("main"))
+    .or_else(|| app_handle.get_webview_window("plex-webview"))
+    .or_else(|| {
+        // Get the first window if specific windows not found
+        let windows = app_handle.webview_windows();
+        if !windows.is_empty() {
+            windows.values().next().cloned()
+        } else {
+            None
+        }
+    })
+    .ok_or_else(|| "No window found".to_string())?;
 
     // Try to set fullscreen state
     let fullscreen_result = window.set_fullscreen(is_fullscreen);
