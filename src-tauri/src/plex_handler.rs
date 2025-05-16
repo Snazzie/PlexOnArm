@@ -1,23 +1,35 @@
-use tauri::{Listener, Manager, Runtime, Window};
+use tauri::{AppHandle, Listener, Manager, Runtime, State, Window};
 
 // Command to toggle fullscreen state of a window
 #[tauri::command]
-pub fn toggle_fullscreen<R: Runtime>(window: Window<R>, isFullscreen: bool) -> Result<(), String> {
-    println!("Setting fullscreen state to: {}", isFullscreen);
+pub fn toggle_fullscreen<R: Runtime>(
+    app_handle: AppHandle<R>,
+    is_fullscreen: bool,
+) -> Result<(), String> {
+    println!("Setting fullscreen state to: {}", is_fullscreen);
+
+    // Try to get the main window or the first available window
+    let window = app_handle
+        .get_webview_window("main")
+        .or_else(|| app_handle.get_webview_window("plex-webview"))
+        .or_else(|| {
+            // Get the first window if specific windows not found
+            let windows = app_handle.webview_windows();
+            if !windows.is_empty() {
+                windows.values().next().cloned()
+            } else {
+                None
+            }
+        })
+        .ok_or_else(|| "No window found".to_string())?;
 
     // Try to set fullscreen state
-    let fullscreen_result = if isFullscreen {
-        // First try to set fullscreen
-        window.set_fullscreen(true)
-    } else {
-        // If not fullscreen, exit fullscreen
-        window.set_fullscreen(false)
-    };
+    let fullscreen_result = window.set_fullscreen(is_fullscreen);
 
     // Handle the result
     match fullscreen_result {
         Ok(_) => {
-            println!("Successfully set fullscreen state to: {}", isFullscreen);
+            println!("Successfully set fullscreen state to: {}", is_fullscreen);
             Ok(())
         }
         Err(e) => {
@@ -29,7 +41,7 @@ pub fn toggle_fullscreen<R: Runtime>(window: Window<R>, isFullscreen: bool) -> R
             eprintln!("{}", error_msg);
 
             // Try to maximize/unmaximize as a fallback
-            if isFullscreen {
+            if is_fullscreen {
                 match window.maximize() {
                     Ok(_) => {
                         println!("Successfully maximized window as fallback");

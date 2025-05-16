@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import "./App.css";
 
@@ -28,9 +27,8 @@ function App() {
           console.log('Webview window created');
           setIsLoading(false);
 
-          // Register the fullscreen listener with our Rust backend
-          invoke('register_fullscreen_listener', { window: webview.label })
-            .catch((e: Error) => console.error('Failed to register fullscreen listener:', e));
+          // No need to register the fullscreen listener as it's injected via initialization script
+          console.log('Fullscreen listener is automatically injected via initialization script');
 
           listen('fullscreenchange', (event: { payload: unknown }) => {
             console.log('Received fullscreenchange event from Rust:', event.payload);

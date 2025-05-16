@@ -3,6 +3,11 @@ mod plex_handler;
 
 use plex_handler::toggle_fullscreen;
 
+#[tauri::command]
+fn greet(name: &str) -> String {
+    format!("Hello, {}! You've been greeted from Rust!", name)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // Fullscreen event listener script
@@ -15,27 +20,28 @@ pub fn run() {
         console.log('Fullscreen state:', isFullscreen);
         console.log('Fullscreen element:', document.fullscreenElement);
 
-        // Send a message to the Tauri app using the event system
+        // Send a message to the Tauri app using the invoke system
         try {
           if (window.__TAURI_INTERNALS__) {
-            // Fixed: Pass isFullscreen as a direct parameter, not nested in message
-            window.__TAURI_INTERNALS__.invoke('toggle_fullscreen', { 
-              isFullscreen: isFullscreen 
+            // Directly invoke the toggle_fullscreen command
+            window.__TAURI_INTERNALS__.invoke('toggle_fullscreen', {
+              isFullscreen: isFullscreen
             });
-            console.log('Emitted fullscreenchange event with state:', isFullscreen);
+            console.log('Invoked toggle_fullscreen with state:', isFullscreen);
           } else {
             console.error('__TAURI_INTERNALS__ is not available');
           }
         } catch (e) {
-          console.error('Error emitting fullscreen event:', e);
+          console.error('Error invoking toggle_fullscreen:', e);
         }
       });
 
       console.log('Plex fullscreen event listener injected');
     ";
+
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![toggle_fullscreen,])
+        .invoke_handler(tauri::generate_handler![greet, toggle_fullscreen,])
         // Setup hook to inject the script into any new webview window
         .setup(|_app| {
             println!("Tauri application setup complete.");
