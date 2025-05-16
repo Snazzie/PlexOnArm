@@ -13,9 +13,6 @@ A lightweight, cross-platform desktop application that provides a dedicated Plex
 - **Optimized Performance**: Built with Tauri for minimal resource usage and fast startup times.
 - **Change Plex Url**: Change the Plex URL to any Plex server you want. i.e tailscale VPN or local network
 
-
-![image](https://github.com/user-attachments/assets/83f0be55-0a08-4347-ad89-595230a187f6)
-
 ## Installation
 
 ### Pre-built Binaries
