@@ -1,4 +1,4 @@
-name: 'publish-windows'
+name: 'publish'
 
 on:
   push:
