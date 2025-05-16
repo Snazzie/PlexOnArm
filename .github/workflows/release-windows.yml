@@ -1,11 +1,11 @@
-name: 'publish'
+name: 'publish-windows'
 
 on:
   push:
     branches:
       - master
 
-# This workflow will trigger on each push to the `release` branch to create or update a GitHub release, build your app, and upload the artifacts to the release.
+# This workflow will trigger on each push to the `master` branch to create or update a GitHub release, build your app, and upload the artifacts to the release.
 
 jobs:
   publish-tauri:
@@ -16,10 +16,17 @@ jobs:
       matrix:
         include:
           # Windows ARM64 build
-          - platform: 'windows-latest'
+          - platform: 'windows-arm64'
+            runner: 'windows-11-arm'
             args: '--target aarch64-pc-windows-msvc'
+            rust_target: 'aarch64-pc-windows-msvc'
+          # Windows x64 build
+          - platform: 'windows-x64'
+            runner: 'windows-latest'
+            args: ''
+            rust_target: 'x86_64-pc-windows-msvc'
 
-    runs-on: windows-11-arm
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -33,8 +40,7 @@ jobs:
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
-          targets: aarch64-pc-windows-msvc
+          targets: ${{ matrix.rust_target }}
 
       - name: install frontend dependencies
         run: pnpm install # change this to npm, pnpm or bun depending on which one you use.
