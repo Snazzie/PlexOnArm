@@ -10,6 +10,7 @@ A lightweight, cross-platform desktop application that provides a dedicated Plex
 
 - **Native Desktop Experience**: Runs Plex Web Client in a native desktop application.
 - **Optimized Performance**: Built with Tauri for minimal resource usage and fast startup times
+- **Smaller Bundle**: 17MB vs 180MB
 
 ## Installation
 
