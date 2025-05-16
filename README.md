@@ -1,7 +1,7 @@
 # Plex On Tauri
 
 <p align="center">
-  <img src="src-tauri/icons/128x128.png" alt="PlexOnArm Logo" width="128" height="128">
+  <img src="src-tauri/icons/128x128.png" alt="PlexOnTauri Logo" width="128" height="128">
 </p>
 
 A lightweight, cross-platform desktop application that provides a dedicated Plex Media Player experience optimized for ARM-based devices (and works great on x86 too!).
@@ -17,7 +17,7 @@ A lightweight, cross-platform desktop application that provides a dedicated Plex
 
 ### Pre-built Binaries
 
-Download the latest release for your platform from the [Releases](https://github.com/yourusername/PlexOnArm/releases) page.
+Download the latest release for your platform from the [Releases](https://github.com/yourusername/plexontauri/releases) page.
 
 ### Building from Source
 
@@ -45,7 +45,7 @@ The ARM64 build is also automatically created by our GitHub Actions workflow whe
 
 ## Usage
 
-1. Launch the PlexOnArm application
+1. Launch the Plex On Tauri application
 2. Click "Continue to Plex" on the welcome screen
 3. Log in to your Plex account
 4. Enjoy your media in a dedicated desktop application!
@@ -62,10 +62,6 @@ The ARM64 build is also automatically created by our GitHub Actions workflow whe
 ### Development Setup
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/PlexOnArm.git
-cd PlexOnArm
-
 # Install dependencies
 pnpm install
 
@@ -79,7 +75,7 @@ pnpm tauri dev
 
 ## How It Works
 
-PlexOnArm uses Tauri to create a native desktop application that loads the Plex web interface.
+Plex On Tauri uses Tauri to create a native desktop application that loads the Plex web interface.
 
 ## CI/CD
 
