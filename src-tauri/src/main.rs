@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    plexarm_lib::run()
+    plexonarm_lib::run()
 }
