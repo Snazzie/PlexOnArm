@@ -58,6 +58,37 @@
   margin: 0 auto;
 }
 
+.url-input-container {
+  margin: 20px 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.url-input-container label {
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.url-input-container input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: #ffffff;
+  color: #333;
+}
+
+.url-help-text {
+  font-size: 14px;
+  color: #666;
+  text-align: left;
+  margin-top: 5px;
+  line-height: 1.5;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -116,5 +147,15 @@ h2 {
 
   .confirmation-container {
     color: #64b5f6;
+  }
+
+  .url-input-container input {
+    background-color: #3a3a3a;
+    color: #f6f6f6;
+    border-color: #555;
+  }
+
+  .url-help-text {
+    color: #aaa;
   }
 }

@@ -1,4 +1,4 @@
-use tauri::{AppHandle, Listener, Manager, Runtime, State, Window};
+use tauri::{AppHandle, Manager, Runtime};
 
 // Command to toggle fullscreen state of a window
 #[tauri::command]
