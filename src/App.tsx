@@ -73,7 +73,6 @@ function App() {
       <div className="confirmation-container">
         <h2>Welcome to Plex on Tauri</h2>
         <p>This application will load Plex in the current window.</p>
-        <p>You can customize the Plex URL below:</p>
 
         <div className="url-input-container">
           <label htmlFor="plex-url">Plex URL:</label>
