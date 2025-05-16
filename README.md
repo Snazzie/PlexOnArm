@@ -8,11 +8,8 @@ A lightweight, cross-platform desktop application that provides a dedicated Plex
 
 ## Features
 
-- **Native Desktop Experience**: Runs Plex in a dedicated desktop application instead of a browser tab
-- **Fullscreen Support**: Automatically detects when Plex enters fullscreen mode and adjusts the application window accordingly
+- **Native Desktop Experience**: Runs Plex Web Client in a native desktop application.
 - **Optimized Performance**: Built with Tauri for minimal resource usage and fast startup times
-- **Cross-Platform**: Works on Windows, macOS, and Linux, with special optimizations for ARM devices
-- **Secure**: Uses Tauri's security model to provide a sandboxed environment
 
 ## Installation
 
