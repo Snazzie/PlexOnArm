@@ -12,46 +12,31 @@ function App() {
       try {
         setIsLoading(true);
 
-        // Create a new webview window that loads Plex
-        const webview = new WebviewWindow('plex-webview', {
-          url: 'https://app.plex.tv/desktop',
-          title: 'Plex on Arm',
-          width: 1280,
-          height: 800,
-          center: true,
-          focus: true
-        });
+        // Configure the current window to load Plex
+        const mainWindow = await WebviewWindow.getByLabel('main');
+        if (mainWindow) {
+          await mainWindow.setTitle('Plex on Arm');
+          // Set size and center are handled by the window configuration
+        }
 
-        // Listen for window events
-        webview.once('tauri://created', () => {
-          console.log('Webview window created');
-          setIsLoading(false);
+        // Navigate to Plex
+        window.location.href = 'https://app.plex.tv/desktop';
 
-          // No need to register the fullscreen listener as it's injected via initialization script
-          console.log('Fullscreen listener is automatically injected via initialization script');
+        console.log('Navigated to Plex in the current window');
+        setIsLoading(false);
 
-          listen('fullscreenchange', (event: { payload: unknown }) => {
-            console.log('Received fullscreenchange event from Rust:', event.payload);
-          })
-            .catch((e: Error) => console.error('Failed to register fullscreen listener:', e));
+        // No need to register the fullscreen listener as it's injected via initialization script
+        console.log('Fullscreen listener is automatically injected via initialization script');
 
-          // Since we can't directly inject JavaScript into the webview in Tauri v2,
-          // we'll use the resize event to detect fullscreen changes
+        listen('fullscreenchange', (event: { payload: unknown }) => {
+          console.log('Received fullscreenchange event from Rust:', event.payload);
+        })
+          .catch((e: Error) => console.error('Failed to register fullscreen listener:', e));
 
-          // Listen for the webview window's resize event
-        });
-
-        webview.once('tauri://error', (event: { payload: unknown }) => {
-          console.error('Error creating webview window:', event.payload);
-          setError('Failed to create Plex window');
-          setIsLoading(false);
-        });
-
-        // The webview will be closed automatically when the app closes
-        // No need to explicitly close it in the cleanup function
+        // The window will be closed automatically when the app closes
         return () => {};
       } catch (err: unknown) {
-        console.error('Failed to initialize webview:', err);
+        console.error('Failed to initialize Plex:', err);
         setError(`Failed to initialize Plex: ${err instanceof Error ? err.message : String(err)}`);
         setIsLoading(false);
       }
