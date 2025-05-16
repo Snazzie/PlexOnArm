@@ -1,50 +1,77 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
+import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import "./App.css";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(true);
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
+  const loadPlex = async () => {
+    try {
+      setIsLoading(true);
+      setShowConfirmation(false);
+
+      // Configure the current window to load Plex
+      const mainWindow = await WebviewWindow.getByLabel('main');
+      if (mainWindow) {
+        await mainWindow.setTitle('Plex on Arm');
+        // Set size and center are handled by the window configuration
+      }
+
+      // Navigate to Plex
+      window.location.href = 'https://app.plex.tv/desktop';
+
+      console.log('Navigated to Plex in the current window');
+      setIsLoading(false);
+
+      return () => {};
+    } catch (err: unknown) {
+      console.error('Failed to initialize Plex:', err);
+      setError(`Failed to initialize Plex: ${err instanceof Error ? err.message : String(err)}`);
+      setIsLoading(false);
+    }
+  };
+
+  // Show confirmation screen
+  if (showConfirmation) {
+    return (
+      <div className="confirmation-container">
+        <h2>Welcome to Plex on Arm</h2>
+        <p>This application will load Plex in the current window.</p>
+        <p>Click the button below to continue to Plex.</p>
+        <button onClick={loadPlex}>Continue to Plex</button>
+      </div>
+    );
   }
 
-  return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
-
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+  // Show loading state or error
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading Plex...</p>
       </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+    );
+  }
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
+  if (error) {
+    return (
+      <div className="error-container">
+        <h2>Error Loading Plex</h2>
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()}>Retry</button>
+      </div>
+    );
+  }
+
+  // The webview is created in a separate window, so we just show a message
+  return (
+    <div className="success-container">
+      <h2>Plex is running in a separate window</h2>
+      <p>If the Plex window was closed, you can reopen it by refreshing this page.</p>
+      <button onClick={() => window.location.reload()}>Reopen Plex</button>
+    </div>
   );
 }
 
