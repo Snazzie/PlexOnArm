@@ -1,49 +1,49 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { listen } from "@tauri-apps/api/event";
 import "./App.css";
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(true);
 
-  useEffect(() => {
-    const initWebview = async () => {
-      try {
-        setIsLoading(true);
+  const loadPlex = async () => {
+    try {
+      setIsLoading(true);
+      setShowConfirmation(false);
 
-        // Configure the current window to load Plex
-        const mainWindow = await WebviewWindow.getByLabel('main');
-        if (mainWindow) {
-          await mainWindow.setTitle('Plex on Arm');
-          // Set size and center are handled by the window configuration
-        }
-
-        // Navigate to Plex
-        window.location.href = 'https://app.plex.tv/desktop';
-
-        console.log('Navigated to Plex in the current window');
-        setIsLoading(false);
-
-        // No need to register the fullscreen listener as it's injected via initialization script
-        console.log('Fullscreen listener is automatically injected via initialization script');
-
-        listen('fullscreenchange', (event: { payload: unknown }) => {
-          console.log('Received fullscreenchange event from Rust:', event.payload);
-        })
-          .catch((e: Error) => console.error('Failed to register fullscreen listener:', e));
-
-        // The window will be closed automatically when the app closes
-        return () => {};
-      } catch (err: unknown) {
-        console.error('Failed to initialize Plex:', err);
-        setError(`Failed to initialize Plex: ${err instanceof Error ? err.message : String(err)}`);
-        setIsLoading(false);
+      // Configure the current window to load Plex
+      const mainWindow = await WebviewWindow.getByLabel('main');
+      if (mainWindow) {
+        await mainWindow.setTitle('Plex on Arm');
+        // Set size and center are handled by the window configuration
       }
-    };
 
-    initWebview();
-  }, []);
+      // Navigate to Plex
+      window.location.href = 'https://app.plex.tv/desktop';
+
+      console.log('Navigated to Plex in the current window');
+      setIsLoading(false);
+
+      return () => {};
+    } catch (err: unknown) {
+      console.error('Failed to initialize Plex:', err);
+      setError(`Failed to initialize Plex: ${err instanceof Error ? err.message : String(err)}`);
+      setIsLoading(false);
+    }
+  };
+
+  // Show confirmation screen
+  if (showConfirmation) {
+    return (
+      <div className="confirmation-container">
+        <h2>Welcome to Plex on Arm</h2>
+        <p>This application will load Plex in the current window.</p>
+        <p>Click the button below to continue to Plex.</p>
+        <button onClick={loadPlex}>Continue to Plex</button>
+      </div>
+    );
+  }
 
   // Show loading state or error
   if (isLoading) {

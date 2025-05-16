@@ -16,7 +16,8 @@
 
 .loading-container,
 .error-container,
-.success-container {
+.success-container,
+.confirmation-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -49,6 +50,12 @@
 
 .success-container {
   color: #2e7d32;
+}
+
+.confirmation-container {
+  color: #1976d2;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 button {
@@ -105,5 +112,9 @@ h2 {
 
   .success-container {
     color: #4caf50;
+  }
+
+  .confirmation-container {
+    color: #64b5f6;
   }
 }
