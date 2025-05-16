@@ -32,7 +32,7 @@ Download the latest release for your platform from the [Releases](https://github
 1. Launch the Plex On Tauri application
 2. Click "Continue to Plex" on the welcome screen
 3. Log in to your Plex account
-4. Enjoy your media in a dedicated desktop application!
+4. Enjoy your media!
 
 ## Development
 
