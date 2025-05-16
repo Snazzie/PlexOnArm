@@ -1,81 +1,50 @@
-name: 'Build and Release Windows ARM64'
+name: 'publish'
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - release
 
+# This workflow will trigger on each push to the `release` branch to create or update a GitHub release, build your app, and upload the artifacts to the release.
+
 jobs:
-  build-windows-arm64:
+  publish-tauri:
     permissions:
       contents: write
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows ARM64 build
+          - platform: 'windows-latest'
+            args: '--target aarch64-pc-windows-msvc'
+
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-pc-windows-msvc
-
-      # Cache Rust dependencies
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-tauri -> target'
-
-      - name: Install ARM64 build tools
-        shell: powershell
-        run: |
-          # Install Visual Studio ARM64 build tools
-          # This is a workaround to install the ARM64 build tools without Visual Studio UI
-          # Using the Visual Studio Build Tools installer in silent mode
-          Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_buildtools.exe" -OutFile "$env:TEMP\vs_buildtools.exe"
-          Start-Process -FilePath "$env:TEMP\vs_buildtools.exe" -ArgumentList "--quiet", "--wait", "--norestart", "--nocache", "--installPath", "C:\BuildTools", "--add", "Microsoft.VisualStudio.Component.VC.Tools.ARM64", "--add", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64" -Wait -NoNewWindow
-
-      - name: Setup Node.js
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      
+      - name: setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
-          cache: 'pnpm'
+          node-version: lts/*
 
-      - name: Install pnpm
-        run: npm install -g pnpm
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+          targets: aarch64-pc-windows-msvc
 
-      - name: Install frontend dependencies
-        run: pnpm install
+      - name: install frontend dependencies
+        run: pnpm install # change this to npm, pnpm or bun depending on which one you use.
 
-      - name: Build Tauri App for Windows ARM64
-        uses: tauri-apps/tauri-action@v0
+      - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: plexonarm-v__VERSION__-arm64 # the action automatically replaces __VERSION__ with the app version
-          releaseName: 'Plex on ARM v__VERSION__ (Windows ARM64)'
-          releaseBody: |
-            Windows ARM64 build for Plex on ARM.
-
-            This release provides a native ARM64 build for Windows on ARM devices like Surface Pro X, Windows Dev Kit, and other ARM-based Windows PCs.
-
-            ## Installation
-            Download the `.msi` installer file and run it to install the application.
-
-            ## Notes
-            - This build requires a Windows on ARM device running Windows 10 or 11
-            - WebView2 runtime will be installed automatically if not already present
+          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          releaseName: 'App v__VERSION__'
+          releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
-          args: --target aarch64-pc-windows-msvc
-
-      - name: Verify build artifacts
-        shell: powershell
-        run: |
-          $msiFile = Get-ChildItem -Path "src-tauri\target\aarch64-pc-windows-msvc\release\bundle\msi\" -Filter "*.msi" | Select-Object -First 1
-          if ($msiFile) {
-            Write-Output "✅ Build successful! MSI installer created: $($msiFile.Name)"
-          } else {
-            Write-Error "❌ Build failed! No MSI installer found."
-            exit 1
-          }
+          args: ${{ matrix.args }}

@@ -25,6 +25,22 @@ Download the latest release for your platform from the [Releases](https://github
 4. Install dependencies: `pnpm install`
 5. Build the application: `pnpm tauri build`
 
+#### Building for Windows ARM64
+
+To build for Windows ARM64 devices (like Surface Pro X, Windows Dev Kit, etc.):
+
+1. Install the ARM64 build tools in Visual Studio
+2. Add the ARM64 target to your Rust installation:
+   ```
+   rustup target add aarch64-pc-windows-msvc
+   ```
+3. Build with the ARM64 target:
+   ```
+   pnpm tauri build -- --target aarch64-pc-windows-msvc
+   ```
+
+The ARM64 build is also automatically created by our GitHub Actions workflow when pushing to the `release` branch.
+
 ## Usage
 
 1. Launch the PlexOnArm application
@@ -61,7 +77,16 @@ pnpm tauri dev
 
 ## How It Works
 
-PlexOnArm uses Tauri to create a native desktop application that loads the Plex web interface. 
+PlexOnArm uses Tauri to create a native desktop application that loads the Plex web interface.
+
+## CI/CD
+
+This project uses GitHub Actions for continuous integration and deployment:
+
+- **Windows ARM64 Build**: Automatically builds and releases Windows ARM64 versions when pushing to the `release` branch
+- **Release Management**: Creates draft releases that can be reviewed before publishing
+
+You can find the workflow configurations in the `.github/workflows` directory.
 
 ## Contributing
 
