@@ -43,17 +43,13 @@ function App() {
       setIsLoading(true);
       setShowConfirmation(false);
 
-      // Save the URL before loading Plex
       await saveUrl(plexUrl);
 
-      // Configure the current window to load Plex
       const mainWindow = await WebviewWindow.getByLabel('main');
       if (mainWindow) {
         await mainWindow.setTitle('Plex On Tauri');
-        // Set size and center are handled by the window configuration
       }
 
-      // Navigate to Plex using the custom URL
       window.location.href = plexUrl;
 
       console.log('Navigated to Plex in the current window');
@@ -67,7 +63,6 @@ function App() {
     }
   };
 
-  // Show confirmation screen
   if (showConfirmation) {
     return (
       <div className="confirmation-container">
@@ -97,7 +92,6 @@ function App() {
     );
   }
 
-  // Show loading state or error
   if (isLoading) {
     return (
       <div className="loading-container">
@@ -117,12 +111,8 @@ function App() {
     );
   }
 
-  // The webview is created in a separate window, so we just show a message
   return (
     <div className="success-container">
-      <h2>Plex is running in a separate window</h2>
-      <p>If the Plex window was closed, you can reopen it by refreshing this page.</p>
-      <button onClick={() => window.location.reload()}>Reopen Plex</button>
     </div>
   );
 }
