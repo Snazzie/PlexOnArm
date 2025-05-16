@@ -19,7 +19,7 @@ jobs:
           - platform: 'windows-latest'
             args: '--target aarch64-pc-windows-msvc'
 
-    runs-on: ubuntu-latest
+    runs-on: windows-11-arm
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
