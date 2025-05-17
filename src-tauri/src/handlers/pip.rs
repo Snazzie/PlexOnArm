@@ -125,7 +125,7 @@ pub fn toggle_pip<R: Runtime>(
 
         let screen_size = *monitor.size(); // Dereference to get owned PhysicalSize
         let pip_width = (screen_size.width as f64 * 0.3) as i32;
-        let pip_height = (screen_size.height as f64 * 0.3) as i32;
+        let pip_height = (screen_size.height as f64 * 0.2) as i32;
         let pip_size = PhysicalSize {
             width: pip_width as u32,
             height: pip_height as u32,
@@ -138,7 +138,7 @@ pub fn toggle_pip<R: Runtime>(
         window
             .set_position(tauri::Position::Physical(PhysicalPosition {
                 x: (screen_size.width as i32 - pip_width - 50).max(0), // Right edge with 50px margin
-                y: (screen_size.height as i32 - pip_height - 150).max(0), // Bottom edge with 50px margin
+                y: (screen_size.height as i32 - pip_height - 150).max(0), // Bottom edge with 150px margin
             }))
             .map_err(|e| format!("Failed to set PIP position: {}", e))?;
 

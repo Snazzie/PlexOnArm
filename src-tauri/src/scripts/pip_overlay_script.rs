@@ -1,4 +1,4 @@
-pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
+pub const PIP_OVERLAY_SCRIPT: &str = r#"
 
   let overlay = null;
   let isPipMode = false;
