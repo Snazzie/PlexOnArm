@@ -11,6 +11,12 @@ use tauri::{
 // Track PIP state
 static IS_PIP: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
 
+// Command to check if PIP mode is active
+#[tauri::command]
+pub fn is_pip_active() -> bool {
+    IS_PIP.load(Ordering::Relaxed)
+}
+
 // Structure to store window state
 #[derive(Debug, Clone)]
 struct WindowState {

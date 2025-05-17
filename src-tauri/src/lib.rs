@@ -1,7 +1,10 @@
 mod handlers;
 mod scripts;
 
-use handlers::{adjust_zoom, get_saved_zoom_level, toggle_fullscreen, toggle_pip};
+use handlers::{
+    adjust_zoom, drag_window, get_saved_zoom_level, is_pip_active, start_dragging,
+    toggle_fullscreen, toggle_pip,
+};
 
 use scripts::script::init_script;
 #[cfg(any(target_os = "macos", windows, target_os = "linux"))]
@@ -25,7 +28,10 @@ pub fn run() {
             toggle_fullscreen,
             adjust_zoom,
             get_saved_zoom_level,
-            toggle_pip
+            toggle_pip,
+            is_pip_active,
+            drag_window,
+            start_dragging
         ])
         // Use the initialization script for all webviews
         .append_invoke_initialization_script(init_script())
