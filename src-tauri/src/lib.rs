@@ -1,6 +1,6 @@
 mod handlers;
 
-use handlers::{adjust_zoom, get_saved_zoom_level, init_zoom_level, toggle_fullscreen};
+use handlers::{adjust_zoom, get_saved_zoom_level, toggle_fullscreen};
 mod script;
 
 #[cfg(any(target_os = "macos", windows, target_os = "linux"))]

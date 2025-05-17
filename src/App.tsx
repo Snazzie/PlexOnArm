@@ -21,27 +21,9 @@ function App() {
 				if (savedUrl) {
 					setPlexUrl(savedUrl);
 				}
-
-				// Skip window state restoration on initial load
-				// We'll manually set the window size and position
-
-				// Get the main window
-				const mainWindow = await WebviewWindow.getByLabel("main");
-				if (mainWindow) {
-					// Now show the window
-					await mainWindow.show();
-				}
 			} catch (err) {
 				console.error("Failed during initialization:", err);
 				// Make window visible even if there was an error
-				try {
-					const mainWindow = await WebviewWindow.getByLabel("main");
-					if (mainWindow) {
-						await mainWindow.show();
-					}
-				} catch (showErr) {
-					console.error("Failed to show window:", showErr);
-				}
 			}
 		};
 
@@ -77,12 +59,6 @@ function App() {
 			// Save URL to settings
 			await saveUrl(plexUrl);
 
-			// Get main window and set title
-			const mainWindow = await WebviewWindow.getByLabel("main");
-			if (mainWindow) {
-				await mainWindow.setTitle("Plex On Tauri");
-			}
-			// Navigate to Plex
 			window.location.href = plexUrl;
 
 			console.log("Navigated to Plex in the current window");
