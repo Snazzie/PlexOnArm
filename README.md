@@ -6,7 +6,7 @@
    Plex On Tauri
    <br/>
    <a href="https://github.com/Snazzie/PlexOnTauri/releases/latest">
-     <img src="https://img.shields.io/github/v/release/Snazzie/PlexOnTauri?style=flat-square&label=Latest Release" alt="Latest Release Version">
+     <img src="https://img.shields.io/github/v/release/Snazzie/PlexOnTauri?style=flat-square&label=Latest%20Release" alt="Latest Release Version">
    </a>
 </p>
 A lightweight, cross-platform desktop application that provides a dedicated Plex Media Player experience optimized for ARM-based devices (and works great on x86 too!).
