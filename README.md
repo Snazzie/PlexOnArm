@@ -1,7 +1,7 @@
 # Plex On Tauri
 
 <p align="center">
-  <img src="src-tauri/icons/128x128.png" alt="PlexOnTauri Logo" width="128" height="128">
+  <img src="./Assets/POT.svg" alt="PlexOnTauri Logo" width="128" height="128">
 </p>
 
 A lightweight, cross-platform desktop application that provides a dedicated Plex Media Player experience optimized for ARM-based devices (and works great on x86 too!).
