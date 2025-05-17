@@ -10,7 +10,7 @@ A lightweight, cross-platform desktop application that provides a dedicated Plex
 ---
 
 <p align="center">
-   <img src="https://github.com/user-attachments/assets/69a0384e-40d9-44b5-9103-9edd11e87836" alt="PlexOnTauri Logo">
+   <img src="https://github.com/user-attachments/assets/c198c3a7-f69f-4786-87e8-7d19a98f6a90" alt="PlexOnTauri Logo">
 </p>
 
 ## Features
