@@ -49,7 +49,7 @@ fn import_js_scripts_to_rust() -> PathBuf {
 
         // Read the JS file content
         let js_content = fs::read_to_string(&js_path)
-            .expect(&format!("Failed to read JS file: {}", js_path.display()));
+            .unwrap_or_else(|_| panic!("Failed to read JS file: {}", js_path.display()));
 
         // Add the constant definition to the Rust code
         rust_code.push_str(&format!(

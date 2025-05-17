@@ -7,8 +7,6 @@ use handlers::{
 };
 
 use scripts::script::init_script;
-#[cfg(any(target_os = "macos", windows, target_os = "linux"))]
-use tauri_plugin_window_state;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

@@ -61,14 +61,14 @@ pub fn toggle_pip<R: Runtime>(
         // Restore size
         if let Some(size) = &saved_state.size {
             window
-                .set_size(size.clone())
+                .set_size(*size)
                 .map_err(|e| format!("Failed to restore size: {}", e))?;
         }
 
         // Restore position
         if let Some(position) = &saved_state.position {
             window
-                .set_position(position.clone())
+                .set_position(*position)
                 .map_err(|e| format!("Failed to restore position: {}", e))?;
         }
 
