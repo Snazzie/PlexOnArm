@@ -1,4 +1,6 @@
-use tauri::{AppHandle, Manager, Runtime};
+use tauri::{AppHandle, Runtime};
+
+use crate::handlers::common::get_window_by_label;
 
 // Command to toggle fullscreen state of a window
 #[tauri::command]
@@ -12,24 +14,8 @@ pub fn toggle_fullscreen<R: Runtime>(
         is_fullscreen, window_label
     );
 
-    // Try to get the specific window that emitted the event, or fall back to default windows
-    let window = if let Some(label) = window_label {
-        app_handle.get_webview_window(&label)
-    } else {
-        None
-    }
-    .or_else(|| app_handle.get_webview_window("main"))
-    .or_else(|| app_handle.get_webview_window("plex-webview"))
-    .or_else(|| {
-        // Get the first window if specific windows not found
-        let windows = app_handle.webview_windows();
-        if !windows.is_empty() {
-            windows.values().next().cloned()
-        } else {
-            None
-        }
-    })
-    .ok_or_else(|| "No window found".to_string())?;
+    // Get the window by label or fall back to default windows
+    let window = get_window_by_label(&app_handle, window_label)?;
 
     // Try to set fullscreen state
     let fullscreen_result = window.set_fullscreen(is_fullscreen);
