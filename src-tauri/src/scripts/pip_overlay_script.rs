@@ -312,33 +312,6 @@ pub const PIP_OVERLAY_SCRIPT: &str = r#"
     }
   });
 
-  // Also listen for the Tauri event for better synchronization
-  // This ensures the overlay state stays in sync if PiP is toggled through other means
-  try {
-    if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.event && window.__TAURI_INTERNALS__.event.listen) {
-      window.__TAURI_INTERNALS__.event.listen('pip-state-changed', (event) => {
-        const state = event.payload;
-        console.log('PiP state changed event received:', state);
-
-        // Only update if the state is different from our current state
-        if (state !== isPipMode) {
-          isPipMode = state;
-
-          if (isPipMode) {
-            createDraggableOverlay();
-          } else {
-            removeDraggableOverlay();
-          }
-        }
-      });
-      console.log('Registered listener for pip-state-changed event');
-    } else {
-      console.warn('Tauri event API not available for PiP state change events');
-    }
-  } catch (e) {
-    console.warn('Error setting up PiP state change listener:', e);
-  }
-
   // Check PiP state on load
   try {
     if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {
