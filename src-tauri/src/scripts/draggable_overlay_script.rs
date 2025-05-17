@@ -104,27 +104,44 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
       removeDraggableOverlay();
     });
 
-    // Add hover detection to show/hide exit button
-    overlay.addEventListener('mouseover', () => {
-      if (exitButton) {
-        exitButton.style.opacity = '1';
-      }
-    });
+    // Create a separate transparent div just for hover detection
+    const hoverDetector = document.createElement('div');
+    hoverDetector.style.position = 'fixed';
+    hoverDetector.style.top = '0';
+    hoverDetector.style.left = '0';
+    hoverDetector.style.width = '100%';
+    hoverDetector.style.height = '100%';
+    hoverDetector.style.pointerEvents = 'none'; // Always click-through
+    hoverDetector.style.backgroundColor = 'transparent';
 
-    overlay.addEventListener('mouseout', (e) => {
-      // Check if we're still within the overlay bounds
+    // Create handler for hover detection
+    mouseMoveForHoverHandler = (e) => {
+      if (!isPipMode || !overlay) return;
+
+      // Get overlay bounds
       const rect = overlay.getBoundingClientRect();
+
+      // Check if mouse is within overlay bounds
       if (
-        e.clientX < rect.left ||
-        e.clientX > rect.right ||
-        e.clientY < rect.top ||
-        e.clientY > rect.bottom
+        e.clientX >= rect.left &&
+        e.clientX <= rect.right &&
+        e.clientY >= rect.top &&
+        e.clientY <= rect.bottom
       ) {
+        // Mouse is over the overlay
+        if (exitButton) {
+          exitButton.style.opacity = '1';
+        }
+      } else {
+        // Mouse is outside the overlay
         if (exitButton) {
           exitButton.style.opacity = '0';
         }
       }
-    });
+    };
+
+    // Add hover detection to show/hide exit button
+    document.addEventListener('mousemove', mouseMoveForHoverHandler);
 
     // Add elements to the DOM
     overlay.appendChild(exitButton);
@@ -140,6 +157,7 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
   let mouseDownHandler = null;
   let mouseMoveHandler = null;
   let mouseUpHandler = null;
+  let mouseMoveForHoverHandler = null;
 
   function setupEventListeners() {
     // Remove any existing listeners first
@@ -147,6 +165,11 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
 
     // Create new handlers
     mouseDownHandler = (e) => {
+      // Skip if we're clicking on the exit button
+      if (e.target.id === 'pip-exit-button' || e.target.parentNode?.id === 'pip-exit-button') {
+        return;
+      }
+
       // Only track left mouse button
       if (e.button === 0 && isPipMode) {
         // Store initial position and time
@@ -154,11 +177,6 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
         dragStartY = e.clientY;
         mouseDownTime = Date.now();
         isDragIntent = false;
-
-        // Temporarily capture mouse events to detect dragging
-        if (overlay) {
-          overlay.style.pointerEvents = 'auto';
-        }
       }
     };
 
@@ -174,7 +192,10 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
         if (distance > dragThreshold && !isDragIntent) {
           isDragIntent = true;
           isDragging = true;
+
+          // Only now capture pointer events for dragging
           if (overlay) {
+            overlay.style.pointerEvents = 'auto';
             overlay.style.cursor = 'grabbing';
           }
 
@@ -207,16 +228,16 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
         }
       }
 
-      // Return to click-through mode
+      // Always return to click-through mode
       if (overlay) {
         overlay.style.pointerEvents = 'none';
       }
     };
 
     // Add the event listeners
-    document.addEventListener('mousedown', mouseDownHandler);
-    document.addEventListener('mousemove', mouseMoveHandler);
-    document.addEventListener('mouseup', mouseUpHandler);
+    document.addEventListener('mousedown', mouseDownHandler, true);
+    document.addEventListener('mousemove', mouseMoveHandler, true);
+    document.addEventListener('mouseup', mouseUpHandler, true);
 
     console.log('Event listeners for dragging set up');
   }
@@ -224,21 +245,26 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
   function removeEventListeners() {
     // Remove event listeners if they exist
     if (mouseDownHandler) {
-      document.removeEventListener('mousedown', mouseDownHandler);
+      document.removeEventListener('mousedown', mouseDownHandler, true);
       mouseDownHandler = null;
     }
 
     if (mouseMoveHandler) {
-      document.removeEventListener('mousemove', mouseMoveHandler);
+      document.removeEventListener('mousemove', mouseMoveHandler, true);
       mouseMoveHandler = null;
     }
 
     if (mouseUpHandler) {
-      document.removeEventListener('mouseup', mouseUpHandler);
+      document.removeEventListener('mouseup', mouseUpHandler, true);
       mouseUpHandler = null;
     }
 
-    console.log('Event listeners for dragging removed');
+    if (mouseMoveForHoverHandler) {
+      document.removeEventListener('mousemove', mouseMoveForHoverHandler);
+      mouseMoveForHoverHandler = null;
+    }
+
+    console.log('Event listeners for dragging and hover removed');
   }
 
   function removeDraggableOverlay() {
