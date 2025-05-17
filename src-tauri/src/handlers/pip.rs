@@ -1,6 +1,6 @@
 use once_cell::sync::Lazy;
 use std::sync::atomic::{AtomicBool, Ordering};
-use tauri::{AppHandle, Manager, Runtime, Window};
+use tauri::{AppHandle, Emitter, Manager, Runtime, Window};
 
 static IS_PIP: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
 
@@ -23,6 +23,7 @@ pub fn toggle_pip<R: Runtime>(
                 height: 600.0,
             }))
             .map_err(|e| format!("Failed to restore size: {}", e))?;
+        window.set_always_on_top(false);
         window
             .set_position(tauri::Position::Logical(tauri::LogicalPosition {
                 x: 0.0,
@@ -58,7 +59,7 @@ pub fn toggle_pip<R: Runtime>(
         window
             .set_size(pip_size)
             .map_err(|e| format!("Failed to set PIP size: {}", e))?;
-
+        window.set_always_on_top(true);
         window
             .set_position(tauri::Position::Physical(PhysicalPosition {
                 x: (screen_size.width as i32 - pip_width - 20).max(0), // Right edge with 20px margin
@@ -78,6 +79,11 @@ pub fn toggle_pip<R: Runtime>(
             .map_err(|e| format!("Failed to focus window: {}", e))?;
     }
 
-    IS_PIP.store(!is_pip, Ordering::Relaxed);
-    Ok(!is_pip)
+    let new_pip_state = !is_pip;
+    IS_PIP.store(new_pip_state, Ordering::Relaxed);
+
+    // Emit event to frontend
+    let _ = window.emit("pip-state-changed", new_pip_state);
+
+    Ok(new_pip_state)
 }
