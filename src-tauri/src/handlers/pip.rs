@@ -62,8 +62,8 @@ pub fn toggle_pip<R: Runtime>(
         window.set_always_on_top(true);
         window
             .set_position(tauri::Position::Physical(PhysicalPosition {
-                x: (screen_size.width as i32 - pip_width - 20).max(0), // Right edge with 20px margin
-                y: (screen_size.height as i32 - pip_height - 20).max(0), // Bottom edge with 20px margin
+                x: (screen_size.width as i32 - pip_width - 50).max(0), // Right edge with 50px margin
+                y: (screen_size.height as i32 - pip_height - 150).max(0), // Bottom edge with 50px margin
             }))
             .map_err(|e| format!("Failed to set PIP position: {}", e))?;
 
