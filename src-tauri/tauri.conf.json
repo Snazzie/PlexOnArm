@@ -18,53 +18,13 @@
         "visible": false,
         "maximized": false
       }
-    ],
-    "security": {
-      "csp": {
-        "default-src": [
-          "'self'",
-          "https://app.plex.tv"
-        ],
-        "img-src": [
-          "'self'",
-          "https://*.plex.tv",
-          "data:",
-          "blob:"
-        ],
-        "media-src": [
-          "'self'",
-          "https://*.plex.tv",
-          "blob:"
-        ],
-        "connect-src": [
-          "'self'",
-          "https://*.plex.tv",
-          "wss://*.plex.tv"
-        ],
-        "script-src": [
-          "'self'",
-          "https://*.plex.tv"
-        ],
-        "style-src": [
-          "'self'",
-          "https://*.plex.tv",
-          "'unsafe-inline'"
-        ],
-        "frame-src": [
-          "'self'",
-          "https://*.plex.tv"
-        ]
-      }
-    }
+    ]
   },
   "bundle": {
     "active": true,
     "targets": "all",
     "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
+      "icons/icon.png",
       "icons/icon.ico"
     ]
   }
