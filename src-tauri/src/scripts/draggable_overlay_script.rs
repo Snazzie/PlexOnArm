@@ -1,36 +1,27 @@
 pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
 
   let overlay = null;
-  let isDragging = false;
   let isPipMode = false;
 
-  // Variables to track drag state
-  let dragStartX = 0;
-  let dragStartY = 0;
-  let dragThreshold = 5; // Pixels to move before activating drag
-  let mouseDownTime = 0;
-  let isDragIntent = false;
-
-  // Reference to exit button
+  // References to UI elements
   let exitButton = null;
+  let dragButton = null;
 
   function createDraggableOverlay() {
     if (overlay) {
       return; // Overlay already exists
     }
 
-    // Create main overlay - only cover top 20% of window
+    // Create a container for our PIP controls (not for dragging)
     overlay = document.createElement('div');
-    overlay.id = 'draggable-overlay';
+    overlay.id = 'pip-controls-container';
     overlay.style.position = 'fixed';
     overlay.style.top = '0';
     overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '20%'; // Only cover top 20% of window
-    overlay.style.zIndex = '9999'; // Ensure it's on top
-    overlay.style.cursor = 'default'; // Default cursor
-    overlay.style.backgroundColor = 'transparent'; // Make it transparent
-    overlay.style.pointerEvents = 'none'; // Allow clicks to pass through by default
+    overlay.style.width = '0';
+    overlay.style.height = '0';
+    overlay.style.zIndex = '9999';
+    overlay.style.pointerEvents = 'none'; // Container is click-through
 
     // Create exit button (initially hidden)
     exitButton = document.createElement('div');
@@ -69,6 +60,66 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
 
     exitButton.title = 'Exit Picture-in-Picture mode';
 
+    // Create drag button in the top middle
+    dragButton = document.createElement('div');
+    dragButton.id = 'pip-drag-button';
+    dragButton.style.position = 'fixed';
+    dragButton.style.top = '5px';
+    dragButton.style.left = '50%';
+    dragButton.style.transform = 'translateX(-50%)'; // Center horizontally
+    dragButton.style.padding = '5px 10px';
+    dragButton.style.borderRadius = '4px';
+    dragButton.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    dragButton.style.color = 'white';
+    dragButton.style.display = 'flex';
+    dragButton.style.alignItems = 'center';
+    dragButton.style.cursor = 'grab'; // Indicate it's draggable
+    dragButton.style.zIndex = '10001';
+    dragButton.style.opacity = '0'; // Start hidden
+    dragButton.style.transition = 'opacity 0.2s ease-in-out, background-color 0.2s ease-in-out';
+    dragButton.style.pointerEvents = 'auto'; // Always clickable
+    dragButton.style.fontSize = '12px';
+    dragButton.style.fontFamily = 'Arial, sans-serif';
+    dragButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.3)';
+    dragButton.textContent = 'Drag to move window';
+
+    // Add hover effect to the drag button
+    dragButton.addEventListener('mouseover', () => {
+      dragButton.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+      dragButton.style.boxShadow = '0 3px 6px rgba(0, 0, 0, 0.5)';
+    });
+    dragButton.addEventListener('mouseout', () => {
+      dragButton.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+      dragButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.3)';
+    });
+
+    // Add mousedown handler for dragging
+    dragButton.addEventListener('mousedown', (e) => {
+      if (e.button === 0) { // Left mouse button
+        e.stopPropagation();
+        dragButton.style.cursor = 'grabbing';
+
+        // Start window dragging
+        try {
+          const windowLabel = window.__TAURI_INTERNALS__?.metadata?.currentWindow?.label || 'main';
+
+          if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {
+            console.log('Starting window drag from drag button');
+            window.__TAURI_INTERNALS__.invoke('drag_window', {
+              windowLabel: windowLabel
+            });
+          }
+        } catch (err) {
+          console.error('Error starting window drag:', err);
+        }
+      }
+    });
+
+    // Reset cursor on mouseup
+    dragButton.addEventListener('mouseup', () => {
+      dragButton.style.cursor = 'grab';
+    });
+
     // Add hover effect to the button
     exitButton.addEventListener('mouseover', () => {
       exitButton.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
@@ -104,9 +155,9 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
       removeDraggableOverlay();
     });
 
-    // Set up hover detection to show/hide exit button
+    // Set up hover detection to show/hide buttons
     mouseMoveForHoverHandler = (e) => {
-      if (!isPipMode || !overlay || !exitButton) return;
+      if (!isPipMode || !exitButton || !dragButton) return;
 
       // Get window dimensions
       const windowHeight = window.innerHeight;
@@ -124,147 +175,46 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
       ) {
         // Mouse is over the top area
         exitButton.style.opacity = '1';
+        dragButton.style.opacity = '1';
       } else {
         // Mouse is outside the top area
         exitButton.style.opacity = '0';
+        dragButton.style.opacity = '0';
       }
     };
 
     // Add hover detection event listener
     document.addEventListener('mousemove', mouseMoveForHoverHandler);
 
-    // Add elements to the DOM - add exit button directly to body
+    // Add elements to the DOM
     document.body.appendChild(overlay);
     document.body.appendChild(exitButton);
+    document.body.appendChild(dragButton);
 
-    console.log('Exit button added to DOM with ID:', exitButton.id);
+    console.log('PIP controls added to DOM');
 
-    // Set up event listeners for dragging
-    setupEventListeners();
+    // We're using the drag button instead of global event listeners
+    // No need to set up global drag event listeners
 
     console.log('Draggable overlay and exit button created and attached to DOM');
   }
 
-  // Store event listener references for cleanup
-  let mouseDownHandler = null;
-  let mouseMoveHandler = null;
-  let mouseUpHandler = null;
+  // Store event listener reference for cleanup
   let mouseMoveForHoverHandler = null;
 
-  function setupEventListeners() {
-    // Remove any existing listeners first
-    removeEventListeners();
-
-    // Create new handlers
-    mouseDownHandler = (e) => {
-      // Skip if we're clicking on the exit button
-      if (e.target.id === 'pip-exit-button' || e.target.parentNode?.id === 'pip-exit-button') {
-        return;
-      }
-
-      // Only track left mouse button
-      if (e.button === 0 && isPipMode) {
-        // Store initial position and time
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
-        mouseDownTime = Date.now();
-        isDragIntent = false;
-      }
-    };
-
-    mouseMoveHandler = (e) => {
-      // Only process if we're in PiP mode and mouse is down
-      if (isPipMode && Date.now() - mouseDownTime < 1000 && mouseDownTime > 0) {
-        // Calculate distance moved
-        const dx = Math.abs(e.clientX - dragStartX);
-        const dy = Math.abs(e.clientY - dragStartY);
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        // If moved more than threshold, it's a drag
-        if (distance > dragThreshold && !isDragIntent) {
-          isDragIntent = true;
-          isDragging = true;
-
-          // Only now capture pointer events for dragging
-          if (overlay) {
-            overlay.style.pointerEvents = 'auto';
-            overlay.style.cursor = 'grabbing';
-          }
-
-          // Start window dragging
-          try {
-            const windowLabel = window.__TAURI_INTERNALS__?.metadata?.currentWindow?.label || 'main';
-
-            if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {
-              console.log('Starting window drag for window:', windowLabel);
-              window.__TAURI_INTERNALS__.invoke('drag_window', {
-                windowLabel: windowLabel
-              });
-            }
-          } catch (err) {
-            console.error('Error starting window drag:', err);
-          }
-        }
-      }
-    };
-
-    mouseUpHandler = () => {
-      // Reset all drag tracking variables
-      mouseDownTime = 0;
-      isDragIntent = false;
-
-      if (isDragging) {
-        isDragging = false;
-        if (overlay) {
-          overlay.style.cursor = 'default';
-        }
-      }
-
-      // Always return to click-through mode
-      if (overlay) {
-        overlay.style.pointerEvents = 'none';
-      }
-    };
-
-    // Add the event listeners
-    document.addEventListener('mousedown', mouseDownHandler, true);
-    document.addEventListener('mousemove', mouseMoveHandler, true);
-    document.addEventListener('mouseup', mouseUpHandler, true);
-
-    console.log('Event listeners for dragging set up');
-  }
+  // We're not using global drag event listeners anymore
 
   function removeEventListeners() {
-    // Remove event listeners if they exist
-    if (mouseDownHandler) {
-      document.removeEventListener('mousedown', mouseDownHandler, true);
-      mouseDownHandler = null;
-    }
-
-    if (mouseMoveHandler) {
-      document.removeEventListener('mousemove', mouseMoveHandler, true);
-      mouseMoveHandler = null;
-    }
-
-    if (mouseUpHandler) {
-      document.removeEventListener('mouseup', mouseUpHandler, true);
-      mouseUpHandler = null;
-    }
-
+    // Only remove the hover detection event listener
     if (mouseMoveForHoverHandler) {
       document.removeEventListener('mousemove', mouseMoveForHoverHandler);
       mouseMoveForHoverHandler = null;
     }
 
-    console.log('Event listeners for dragging and hover removed');
+    console.log('Hover detection event listener removed');
   }
 
   function removeDraggableOverlay() {
-    // Clean up
-    isDragging = false;
-    mouseDownTime = 0;
-    isDragIntent = false;
-
     // Remove event listeners
     removeEventListeners();
 
@@ -280,6 +230,13 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
       exitButton.remove();
       exitButton = null;
       console.log('Exit button removed from DOM');
+    }
+
+    // Remove the drag button separately
+    if (dragButton) {
+      dragButton.remove();
+      dragButton = null;
+      console.log('Drag button removed from DOM');
     }
   }
 
