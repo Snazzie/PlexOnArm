@@ -1,6 +1,6 @@
-mod plex_handler;
+mod handlers;
 
-use plex_handler::toggle_fullscreen;
+use handlers::{adjust_zoom, get_saved_zoom_level, init_zoom_level, toggle_fullscreen};
 mod script;
 
 #[cfg(any(target_os = "macos", windows, target_os = "linux"))]
@@ -12,14 +12,19 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_store::Builder::default().build());
 
-    // Add window state plugin on desktop platforms
+    // Add window state plugin on desktop platforms with custom configuration
+    // Disable automatic window state restoration to prevent maximized state on startup
     #[cfg(any(target_os = "macos", windows, target_os = "linux"))]
     {
         builder = builder.plugin(tauri_plugin_window_state::Builder::default().build());
     }
 
     builder
-        .invoke_handler(tauri::generate_handler![toggle_fullscreen,])
+        .invoke_handler(tauri::generate_handler![
+            toggle_fullscreen,
+            adjust_zoom,
+            get_saved_zoom_level
+        ])
         // Use the initialization script for all webviews
         .append_invoke_initialization_script(script::INIT_SCRIPT)
         .run(tauri::generate_context!())

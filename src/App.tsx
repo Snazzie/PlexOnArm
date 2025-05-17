@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { load } from "@tauri-apps/plugin-store";
-import { restoreStateCurrent, StateFlags } from '@tauri-apps/plugin-window-state';
+import { restoreWindowState } from "./windowState";
 import "./App.css";
 
 function App() {
@@ -10,7 +10,7 @@ function App() {
   const [showConfirmation, setShowConfirmation] = useState(true);
   const [plexUrl, setPlexUrl] = useState('https://app.plex.tv/desktop');
 
-  // Load saved URL from store and restore window state when component mounts
+  // Load saved URL from store and set up initial window state when component mounts
   useEffect(() => {
     const initialize = async () => {
       try {
@@ -21,12 +21,26 @@ function App() {
           setPlexUrl(savedUrl);
         }
 
-        // Restore window state (size and position)
-        await restoreStateCurrent(StateFlags.ALL);
+        // Skip window state restoration on initial load
+        // We'll manually set the window size and position
 
-        // Make the window visible after restoring state
+        // Get the main window
         const mainWindow = await WebviewWindow.getByLabel('main');
+        mainWindow?.hide();
         if (mainWindow) {
+          try {
+            // Set a default size and position
+            await mainWindow.center();
+
+            // Force unmaximize to ensure window is not maximized
+            await mainWindow.unmaximize();
+
+            console.log('Window initialized with default size and position');
+          } catch (err) {
+            console.error('Failed to set window size and position:', err);
+          }
+
+          // Now show the window
           await mainWindow.show();
         }
       } catch (err) {
@@ -35,6 +49,15 @@ function App() {
         try {
           const mainWindow = await WebviewWindow.getByLabel('main');
           if (mainWindow) {
+            // Ensure the window is not maximized before showing it
+            try {
+              // Force unmaximize regardless of current state
+              await mainWindow.unmaximize();
+            } catch (maxErr) {
+              console.error('Failed to unmaximize window:', maxErr);
+            }
+
+            // Now show the window
             await mainWindow.show();
           }
         } catch (showErr) {
@@ -71,8 +94,11 @@ function App() {
         await mainWindow.setTitle('Plex On Tauri');
       }
 
-      // Save window state before navigating
-      await restoreStateCurrent(StateFlags.ALL);
+      // Now restore the FULL window state including maximized state
+      // This will apply any previously saved maximized state
+      await restoreWindowState();
+
+      console.log('Restored full window state including maximized state');
 
       // Navigate to Plex
       window.location.href = plexUrl;

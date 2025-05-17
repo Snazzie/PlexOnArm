@@ -15,7 +15,8 @@
         "title": "Plex On Tauri",
         "width": 1024,
         "height": 768,
-        "visible": false
+        "visible": false,
+        "maximized": false
       }
     ],
     "security": {
