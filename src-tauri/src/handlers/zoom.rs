@@ -1,4 +1,4 @@
-use tauri::{AppHandle, Runtime};
+use tauri::{AppHandle, Emitter, Runtime};
 
 use crate::handlers::common::{get_window_by_label, load_zoom_level, save_zoom_level};
 
@@ -94,13 +94,18 @@ pub fn adjust_zoom<R: Runtime>(
             println!("Successfully set zoom level to: {}", zoom_level);
 
             // Save the zoom level to the store
-            match save_zoom_level(app_handle, zoom_level) {
+            match save_zoom_level(app_handle.clone(), zoom_level) {
                 Ok(_) => {
                     println!("Zoom level saved to settings");
                 }
                 Err(e) => {
                     eprintln!("Failed to save zoom level: {}", e);
                 }
+            }
+
+            // Emit event with the new zoom level
+            if let Err(e) = app_handle.emit("zoom-level-changed", zoom_level) {
+                eprintln!("Failed to emit zoom-level-changed event: {}", e);
             }
 
             Ok(zoom_level)
