@@ -3,13 +3,21 @@ mod plex_handler;
 use plex_handler::toggle_fullscreen;
 mod script;
 
-use tauri::{Listener, Manager};
+#[cfg(any(target_os = "macos", windows, target_os = "linux"))]
+use tauri_plugin_window_state;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let builder = tauri::Builder::default()
+    // Fullscreen event listener scrip
+    let mut builder = tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_store::Builder::default().build());
+
+    // Add window state plugin on desktop platforms
+    #[cfg(any(target_os = "macos", windows, target_os = "linux"))]
+    {
+        builder = builder.plugin(tauri_plugin_window_state::Builder::default().build());
+    }
 
     builder
         .invoke_handler(tauri::generate_handler![toggle_fullscreen,])
