@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
-import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { load } from "@tauri-apps/plugin-store";
 import "./App.css";
 import { listen } from "@tauri-apps/api/event";
 
 function App() {
-	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [showConfirmation, setShowConfirmation] = useState(true);
 	const [plexUrl, setPlexUrl] = useState("https://app.plex.tv/desktop");
 	const [zoomLevel, setZoomLevel] = useState(1.0);
 
@@ -53,16 +50,12 @@ function App() {
 
 	const loadPlex = async () => {
 		try {
-			setIsLoading(true);
-			setShowConfirmation(false);
-
 			// Save URL to settings
 			await saveUrl(plexUrl);
 
 			window.location.href = plexUrl;
 
 			console.log("Navigated to Plex in the current window");
-			setIsLoading(false);
 
 			return () => {};
 		} catch (err: unknown) {
@@ -70,18 +63,8 @@ function App() {
 			setError(
 				`Failed to initialize Plex: ${err instanceof Error ? err.message : String(err)}`,
 			);
-			setIsLoading(false);
 		}
 	};
-
-	if (isLoading) {
-		return (
-			<div className="loading-container">
-				<div className="loading-spinner" />
-				<p>Loading Plex...</p>
-			</div>
-		);
-	}
 
 	if (error) {
 		return (
@@ -97,41 +80,32 @@ function App() {
 
 	return (
 		<>
-			{showConfirmation && (
-				<div className="confirmation-container">
-					<h2>Welcome to Plex on Tauri</h2>
-					<p>This application will load Plex in the current window.</p>
-					<div className="zoom-level-display">
-						Zoom: {(zoomLevel * 100).toFixed(0)}%
-					</div>
-					<div className="url-input-container">
-						<label htmlFor="plex-url">Plex Client URL:</label>
-						<input
-							id="plex-url"
-							type="text"
-							value={plexUrl}
-							onChange={(e) => setPlexUrl(e.target.value)}
-							placeholder="Enter Plex Client URL"
-						/>
-					</div>
-
-					<p className="url-help-text">
-						Examples: <br />- Default Plex: https://app.plex.tv/desktop <br />-
-						Local Plex: http://192.168.1.100:32400/web <br />- Tailscale:
-						http://plexserver:32400/web
-					</p>
-					<button onClick={loadPlex} type="button">
-						Continue to Plex
-					</button>
+			<div className="confirmation-container">
+				<h2>Welcome to Plex on Tauri</h2>
+				<p>This application will load Plex in the current window.</p>
+				<div className="zoom-level-display">
+					Zoom: {(zoomLevel * 100).toFixed(0)}%
 				</div>
-			)}
-
-			{isLoading && (
-				<div className="loading-container">
-					<div className="loading-spinner" />
-					<p>Loading Plex...</p>
+				<div className="url-input-container">
+					<label htmlFor="plex-url">Plex Client URL:</label>
+					<input
+						id="plex-url"
+						type="text"
+						value={plexUrl}
+						onChange={(e) => setPlexUrl(e.target.value)}
+						placeholder="Enter Plex Client URL"
+					/>
 				</div>
-			)}
+
+				<p className="url-help-text">
+					Examples: <br />- Default Plex: https://app.plex.tv/desktop <br />-
+					Local Plex: http://192.168.1.100:32400/web <br />- Tailscale:
+					http://plexserver:32400/web
+				</p>
+				<button onClick={loadPlex} type="button">
+					Continue to Plex
+				</button>
+			</div>
 
 			{error && (
 				<div className="error-container">
@@ -140,12 +114,6 @@ function App() {
 					<button onClick={() => window.location.reload()} type="button">
 						Retry
 					</button>
-				</div>
-			)}
-
-			{!showConfirmation && !isLoading && !error && (
-				<div className="success-container">
-					{/* Content for success state if needed */}
 				</div>
 			)}
 		</>
