@@ -6,6 +6,15 @@ pub const PIP_SCRIPT: &str = r#"
             event.preventDefault(); // Prevent default browser behavior
             console.log('Alt+P shortcut detected for PiP toggle');
 
+            // Check if we're on the initial screen by looking for the confirmation container
+            const isOnInitialScreen = document.querySelector('.confirmation-container') !== null;
+
+            // Only proceed if we're NOT on the initial screen
+            if (isOnInitialScreen) {
+                console.log('Ignoring Alt+P on initial screen');
+                return;
+            }
+
             try {
                 if (window.__TAURI_INTERNALS__) {
                     // Safely get the current window label
