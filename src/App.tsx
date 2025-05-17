@@ -95,13 +95,13 @@ function App() {
         <p>This application will load Plex in the current window.</p>
 
         <div className="url-input-container">
-          <label htmlFor="plex-url">Plex URL:</label>
+          <label htmlFor="plex-url">Plex Client URL:</label>
           <input
             id="plex-url"
             type="text"
             value={plexUrl}
             onChange={(e) => setPlexUrl(e.target.value)}
-            placeholder="Enter Plex URL"
+            placeholder="Enter Plex Client URL"
           />
         </div>
 
