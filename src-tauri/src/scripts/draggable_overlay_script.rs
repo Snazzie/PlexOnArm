@@ -19,14 +19,14 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
       return; // Overlay already exists
     }
 
-    // Create main overlay
+    // Create main overlay - only cover top 20% of window
     overlay = document.createElement('div');
     overlay.id = 'draggable-overlay';
     overlay.style.position = 'fixed';
     overlay.style.top = '0';
     overlay.style.left = '0';
     overlay.style.width = '100%';
-    overlay.style.height = '100%';
+    overlay.style.height = '20%'; // Only cover top 20% of window
     overlay.style.zIndex = '9999'; // Ensure it's on top
     overlay.style.cursor = 'default'; // Default cursor
     overlay.style.backgroundColor = 'transparent'; // Make it transparent
@@ -35,7 +35,7 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
     // Create exit button (initially hidden)
     exitButton = document.createElement('div');
     exitButton.id = 'pip-exit-button';
-    exitButton.style.position = 'absolute';
+    exitButton.style.position = 'fixed'; // Use fixed instead of absolute
     exitButton.style.top = '5px';
     exitButton.style.left = '5px';
     exitButton.style.padding = '5px 10px';
@@ -45,9 +45,9 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
     exitButton.style.display = 'flex';
     exitButton.style.alignItems = 'center';
     exitButton.style.cursor = 'pointer';
-    exitButton.style.zIndex = '10000'; // Above the overlay
+    exitButton.style.zIndex = '10001'; // Higher than the overlay
     exitButton.style.opacity = '0'; // Start hidden
-    exitButton.style.transition = 'opacity 0.2s ease-in-out';
+    exitButton.style.transition = 'opacity 0.2s ease-in-out, background-color 0.2s ease-in-out';
     exitButton.style.pointerEvents = 'auto'; // Always clickable
     exitButton.style.fontSize = '12px';
     exitButton.style.fontFamily = 'Arial, sans-serif';
@@ -104,48 +104,40 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
       removeDraggableOverlay();
     });
 
-    // Create a separate transparent div just for hover detection
-    const hoverDetector = document.createElement('div');
-    hoverDetector.style.position = 'fixed';
-    hoverDetector.style.top = '0';
-    hoverDetector.style.left = '0';
-    hoverDetector.style.width = '100%';
-    hoverDetector.style.height = '100%';
-    hoverDetector.style.pointerEvents = 'none'; // Always click-through
-    hoverDetector.style.backgroundColor = 'transparent';
-
-    // Create handler for hover detection
+    // Set up hover detection to show/hide exit button
     mouseMoveForHoverHandler = (e) => {
-      if (!isPipMode || !overlay) return;
+      if (!isPipMode || !overlay || !exitButton) return;
 
-      // Get overlay bounds
-      const rect = overlay.getBoundingClientRect();
+      // Get window dimensions
+      const windowHeight = window.innerHeight;
+      const windowWidth = window.innerWidth;
 
-      // Check if mouse is within overlay bounds
+      // Calculate the top 20% area
+      const topAreaHeight = windowHeight * 0.2;
+
+      // Check if mouse is within the top 20% area
       if (
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom
+        e.clientX >= 0 &&
+        e.clientX <= windowWidth &&
+        e.clientY >= 0 &&
+        e.clientY <= topAreaHeight
       ) {
-        // Mouse is over the overlay
-        if (exitButton) {
-          exitButton.style.opacity = '1';
-        }
+        // Mouse is over the top area
+        exitButton.style.opacity = '1';
       } else {
-        // Mouse is outside the overlay
-        if (exitButton) {
-          exitButton.style.opacity = '0';
-        }
+        // Mouse is outside the top area
+        exitButton.style.opacity = '0';
       }
     };
 
-    // Add hover detection to show/hide exit button
+    // Add hover detection event listener
     document.addEventListener('mousemove', mouseMoveForHoverHandler);
 
-    // Add elements to the DOM
-    overlay.appendChild(exitButton);
+    // Add elements to the DOM - add exit button directly to body
     document.body.appendChild(overlay);
+    document.body.appendChild(exitButton);
+
+    console.log('Exit button added to DOM with ID:', exitButton.id);
 
     // Set up event listeners for dragging
     setupEventListeners();
@@ -268,22 +260,26 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
   }
 
   function removeDraggableOverlay() {
+    // Clean up
+    isDragging = false;
+    mouseDownTime = 0;
+    isDragIntent = false;
+
+    // Remove event listeners
+    removeEventListeners();
+
+    // Remove the overlay
     if (overlay) {
-      // Clean up
-      isDragging = false;
-      mouseDownTime = 0;
-      isDragIntent = false;
-
-      // Remove event listeners
-      removeEventListeners();
-
-      // Clean up exit button reference
-      exitButton = null;
-
-      // Remove the overlay (which also removes the exit button since it's a child)
       overlay.remove();
       overlay = null;
-      console.log('Draggable overlay and exit button removed from DOM');
+      console.log('Draggable overlay removed from DOM');
+    }
+
+    // Remove the exit button separately
+    if (exitButton) {
+      exitButton.remove();
+      exitButton = null;
+      console.log('Exit button removed from DOM');
     }
   }
 
