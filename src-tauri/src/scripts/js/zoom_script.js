@@ -12,7 +12,7 @@ document.addEventListener('keydown', (event) => {
                         window.__TAURI_INTERNALS__.metadata.currentWindow) {
                         windowLabel = window.__TAURI_INTERNALS__.metadata.currentWindow.label;
                     } else {
-                        console.log('Window metadata not available for keyboard shortcut, using null window label');
+                        console.debug('Window metadata not available for keyboard shortcut, using null window label');
                     }
                 } catch (metadataErr) {
                     console.warn('Could not access window metadata for keyboard shortcut:', metadataErr);
@@ -21,7 +21,7 @@ document.addEventListener('keydown', (event) => {
                 // Check for Ctrl + Plus (zoom in)
                 if (event.key === '+' || event.key === '=' || event.keyCode === 107 || event.keyCode === 187) {
                     event.preventDefault(); // Prevent default browser zoom
-                    console.log('Zoom in shortcut detected');
+                    console.debug('Zoom in shortcut detected');
 
                     // Invoke the adjust_zoom command with zoom_in=true
                     window.__TAURI_INTERNALS__.invoke('adjust_zoom', {
