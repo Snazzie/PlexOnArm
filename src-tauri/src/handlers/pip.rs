@@ -1,8 +1,42 @@
 use once_cell::sync::Lazy;
-use std::sync::atomic::{AtomicBool, Ordering};
-use tauri::{AppHandle, Emitter, Manager, Runtime, Window};
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Mutex,
+};
+use tauri::{
+    AppHandle, Emitter, LogicalPosition, LogicalSize, Manager, PhysicalPosition, PhysicalSize,
+    Runtime,
+};
 
+// Track PIP state
 static IS_PIP: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
+
+// Structure to store window state
+#[derive(Debug, Clone)]
+struct WindowState {
+    size: Option<tauri::Size>,
+    position: Option<tauri::Position>,
+    always_on_top: bool,
+    decorations: bool,
+}
+
+impl Default for WindowState {
+    fn default() -> Self {
+        Self {
+            size: Some(tauri::Size::Logical(LogicalSize {
+                width: 800.0,
+                height: 600.0,
+            })),
+            position: Some(tauri::Position::Logical(LogicalPosition { x: 0.0, y: 0.0 })),
+            always_on_top: false,
+            decorations: true,
+        }
+    }
+}
+
+// Store the previous window state
+static PREVIOUS_WINDOW_STATE: Lazy<Mutex<WindowState>> =
+    Lazy::new(|| Mutex::new(WindowState::default()));
 
 #[tauri::command]
 pub fn toggle_pip<R: Runtime>(
@@ -16,23 +50,32 @@ pub fn toggle_pip<R: Runtime>(
     let is_pip = IS_PIP.load(Ordering::Relaxed);
 
     if is_pip {
-        // Restore normal view
+        // Restore normal view from saved state
+        let saved_state = PREVIOUS_WINDOW_STATE.lock().map_err(|e| e.to_string())?;
+
+        // Restore size
+        if let Some(size) = &saved_state.size {
+            window
+                .set_size(size.clone())
+                .map_err(|e| format!("Failed to restore size: {}", e))?;
+        }
+
+        // Restore position
+        if let Some(position) = &saved_state.position {
+            window
+                .set_position(position.clone())
+                .map_err(|e| format!("Failed to restore position: {}", e))?;
+        }
+
+        // Restore always-on-top state
+        let _ = window.set_always_on_top(saved_state.always_on_top);
+
+        // Restore decorations
         window
-            .set_size(tauri::Size::Logical(tauri::LogicalSize {
-                width: 800.0,
-                height: 600.0,
-            }))
-            .map_err(|e| format!("Failed to restore size: {}", e))?;
-        window.set_always_on_top(false);
-        window
-            .set_position(tauri::Position::Logical(tauri::LogicalPosition {
-                x: 0.0,
-                y: 0.0,
-            }))
-            .map_err(|e| format!("Failed to restore position: {}", e))?;
-        window
-            .set_decorations(true)
-            .map_err(|e| format!("Failed to show decorations: {}", e))?;
+            .set_decorations(saved_state.decorations)
+            .map_err(|e| format!("Failed to restore decorations: {}", e))?;
+
+        // Make sure window is visible and focused
         window
             .show()
             .map_err(|e| format!("Failed to show window: {}", e))?;
@@ -40,6 +83,32 @@ pub fn toggle_pip<R: Runtime>(
             .set_focus()
             .map_err(|e| format!("Failed to focus window: {}", e))?;
     } else {
+        // Save current window state before entering PIP mode
+        let mut current_state = WindowState::default();
+
+        // Save current size
+        if let Ok(size) = window.inner_size() {
+            current_state.size = Some(tauri::Size::Physical(size));
+        }
+
+        // Save current position
+        if let Ok(position) = window.outer_position() {
+            current_state.position = Some(tauri::Position::Physical(position));
+        }
+
+        // Save always-on-top state
+        if let Ok(always_on_top) = window.is_always_on_top() {
+            current_state.always_on_top = always_on_top;
+        }
+
+        // Save decorations state
+        if let Ok(decorations) = window.is_decorated() {
+            current_state.decorations = decorations;
+        }
+
+        // Store the current state
+        *PREVIOUS_WINDOW_STATE.lock().map_err(|e| e.to_string())? = current_state;
+
         // Enter PIP mode
         let monitor = window
             .current_monitor()
@@ -59,7 +128,7 @@ pub fn toggle_pip<R: Runtime>(
         window
             .set_size(pip_size)
             .map_err(|e| format!("Failed to set PIP size: {}", e))?;
-        window.set_always_on_top(true);
+        let _ = window.set_always_on_top(true);
         window
             .set_position(tauri::Position::Physical(PhysicalPosition {
                 x: (screen_size.width as i32 - pip_width - 50).max(0), // Right edge with 50px margin
@@ -67,7 +136,6 @@ pub fn toggle_pip<R: Runtime>(
             }))
             .map_err(|e| format!("Failed to set PIP position: {}", e))?;
 
-        let _ = window.set_always_on_top(true);
         window
             .set_decorations(false)
             .map_err(|e| format!("Failed to hide decorations: {}", e))?;
