@@ -27,8 +27,8 @@ pub const PIP_OVERLAY_SCRIPT: &str = r#"
     exitButton = document.createElement('div');
     exitButton.id = 'pip-exit-button';
     exitButton.style.position = 'fixed'; // Use fixed instead of absolute
-    exitButton.style.top = '5px';
-    exitButton.style.left = '5px';
+    exitButton.style.top = '10px';
+    exitButton.style.left = '10px';
     exitButton.style.padding = '5px 10px';
     exitButton.style.borderRadius = '4px';
     exitButton.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
@@ -38,7 +38,7 @@ pub const PIP_OVERLAY_SCRIPT: &str = r#"
     exitButton.style.cursor = 'pointer';
     exitButton.style.zIndex = '10001'; // Higher than the overlay
     exitButton.style.opacity = '0'; // Start hidden
-    exitButton.style.transition = 'opacity 0.2s ease-in-out, background-color 0.2s ease-in-out';
+    exitButton.style.transition = 'opacity 0.3s ease-in-out, background-color 0.2s ease-in-out';
     exitButton.style.pointerEvents = 'auto'; // Always clickable
     exitButton.style.fontSize = '12px';
     exitButton.style.fontFamily = 'Arial, sans-serif';
@@ -67,7 +67,7 @@ pub const PIP_OVERLAY_SCRIPT: &str = r#"
     dragButton = document.createElement('div');
     dragButton.id = 'pip-drag-button';
     dragButton.style.position = 'fixed';
-    dragButton.style.top = '5px';
+    dragButton.style.top = '10px';
     dragButton.style.left = '50%';
     dragButton.style.transform = 'translateX(-50%)'; // Center horizontally
     dragButton.style.padding = '5px 10px';
@@ -79,7 +79,7 @@ pub const PIP_OVERLAY_SCRIPT: &str = r#"
     dragButton.style.cursor = 'grab'; // Indicate it's draggable
     dragButton.style.zIndex = '10001';
     dragButton.style.opacity = '0'; // Start hidden
-    dragButton.style.transition = 'opacity 0.2s ease-in-out, background-color 0.2s ease-in-out';
+    dragButton.style.transition = 'opacity 0.3s ease-in-out, background-color 0.2s ease-in-out';
     dragButton.style.pointerEvents = 'auto'; // Always clickable
     dragButton.style.fontSize = '12px';
     dragButton.style.fontFamily = 'Arial, sans-serif';
@@ -170,13 +170,22 @@ pub const PIP_OVERLAY_SCRIPT: &str = r#"
       // Calculate the top 20% area
       const topAreaHeight = windowHeight * 0.2;
 
-      // Check if mouse is within the top 20% area
-      if (
+      // Check if mouse is within the window bounds
+      const isInWindow =
         e.clientX >= 0 &&
         e.clientX <= windowWidth &&
         e.clientY >= 0 &&
-        e.clientY <= topAreaHeight
-      ) {
+        e.clientY <= windowHeight;
+
+      // Check if mouse is within the top 20% area
+      const isInTopArea =
+        e.clientX >= 0 &&
+        e.clientX <= windowWidth &&
+        e.clientY >= 0 &&
+        e.clientY <= topAreaHeight;
+
+      // Show controls if mouse is in top area
+      if (isInTopArea) {
         // Mouse is over the top area
         exitButton.style.opacity = '1';
         dragButton.style.opacity = '1';
@@ -189,6 +198,25 @@ pub const PIP_OVERLAY_SCRIPT: &str = r#"
 
     // Add hover detection event listener
     document.addEventListener('mousemove', mouseMoveForHoverHandler);
+
+    // Add mouseout event listener to hide controls when mouse leaves the window
+    mouseOutHandler = (e) => {
+      // Check if the mouse has left the document/window
+      if (e.relatedTarget === null || e.relatedTarget.nodeName === 'HTML') {
+        exitButton.style.opacity = '0';
+        dragButton.style.opacity = '0';
+        console.log('Mouse left window, hiding PIP controls');
+      }
+    };
+    document.addEventListener('mouseout', mouseOutHandler);
+
+    // Add mouseleave event listener to the window
+    mouseLeaveHandler = () => {
+      exitButton.style.opacity = '0';
+      dragButton.style.opacity = '0';
+      console.log('Mouse left window (mouseleave), hiding PIP controls');
+    };
+    window.addEventListener('mouseleave', mouseLeaveHandler);
 
     // Add elements to the DOM
     document.body.appendChild(overlay);
@@ -203,19 +231,33 @@ pub const PIP_OVERLAY_SCRIPT: &str = r#"
     console.log('Draggable overlay and exit button created and attached to DOM');
   }
 
-  // Store event listener reference for cleanup
+  // Store event listener references for cleanup
   let mouseMoveForHoverHandler = null;
+  let mouseOutHandler = null;
+  let mouseLeaveHandler = null;
 
   // We're not using global drag event listeners anymore
 
   function removeEventListeners() {
-    // Only remove the hover detection event listener
+    // Remove the hover detection event listener
     if (mouseMoveForHoverHandler) {
       document.removeEventListener('mousemove', mouseMoveForHoverHandler);
       mouseMoveForHoverHandler = null;
     }
 
-    console.log('Hover detection event listener removed');
+    // Remove the mouseout event listener
+    if (mouseOutHandler) {
+      document.removeEventListener('mouseout', mouseOutHandler);
+      mouseOutHandler = null;
+    }
+
+    // Remove the mouseleave event listener
+    if (mouseLeaveHandler) {
+      window.removeEventListener('mouseleave', mouseLeaveHandler);
+      mouseLeaveHandler = null;
+    }
+
+    console.log('All event listeners removed');
   }
 
   function removeDraggableOverlay() {
@@ -248,6 +290,15 @@ pub const PIP_OVERLAY_SCRIPT: &str = r#"
   document.addEventListener('keydown', function(event) {
     // Check if Alt key is pressed and P key is pressed
     if (event.altKey && event.key === 'p') {
+      // Check if we're on the initial screen by looking for the confirmation container
+      const isOnInitialScreen = document.querySelector('.confirmation-container') !== null;
+
+      // Only proceed if we're NOT on the initial screen
+      if (isOnInitialScreen) {
+        console.log('Ignoring Alt+P on initial screen in overlay script');
+        return;
+      }
+
       // Toggle PiP mode state
       isPipMode = !isPipMode;
       console.log('PiP mode toggled via Alt+P to:', isPipMode);
@@ -291,17 +342,37 @@ pub const PIP_OVERLAY_SCRIPT: &str = r#"
   // Check PiP state on load
   try {
     if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {
-      window.__TAURI_INTERNALS__.invoke('is_pip_active')
-        .then(state => {
-          if (state) {
-            console.log('PiP mode is active on script load');
-            isPipMode = true;
-            createDraggableOverlay();
-          }
-        })
-        .catch(err => {
-          console.warn('Failed to check PiP state on load:', err);
-        });
+      // First check if we're on the initial screen
+      const isOnInitialScreen = document.querySelector('.confirmation-container') !== null;
+
+      // If we're on the initial screen, make sure PiP is disabled
+      if (isOnInitialScreen) {
+        console.log('On initial screen, ensuring PiP is disabled');
+        if (isPipMode) {
+          isPipMode = false;
+          removeDraggableOverlay();
+
+          // Reset the PiP state in the backend
+          window.__TAURI_INTERNALS__.invoke('toggle_pip', {
+            windowLabel: window.__TAURI_INTERNALS__?.metadata?.currentWindow?.label || 'main'
+          }).catch(err => {
+            console.warn('Failed to reset PiP state on initial screen:', err);
+          });
+        }
+      } else {
+        // Only check and restore PiP state if we're not on the initial screen
+        window.__TAURI_INTERNALS__.invoke('is_pip_active')
+          .then(state => {
+            if (state) {
+              console.log('PiP mode is active on script load');
+              isPipMode = true;
+              createDraggableOverlay();
+            }
+          })
+          .catch(err => {
+            console.warn('Failed to check PiP state on load:', err);
+          });
+      }
     } else {
       console.warn('Tauri API not available to check PiP state');
     }
