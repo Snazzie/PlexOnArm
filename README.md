@@ -19,6 +19,7 @@ A lightweight, cross-platform desktop application that provides a dedicated Plex
 - **Fixes Plex Windows Arm's annoying bugs**: No more skipping, black screen and stuttery UI!
 - **Optimized Performance**: Built with Tauri for minimal resource usage and fast startup times.
 - **Change Plex Url**: Change the Plex URL to any Plex server you want. i.e tailscale VPN or local network
+- **Picture in Picture Mode**: Toggle between full-screen and picture-in-picture mode with a simple keyboard shortcut (Alt + P).
 
 ## Usage
 
