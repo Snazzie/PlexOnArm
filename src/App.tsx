@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { load } from "@tauri-apps/plugin-store";
 import "./App.css";
 import { listen } from "@tauri-apps/api/event";
-
+import { invoke } from "@tauri-apps/api/core";
 function App() {
 	const [error, setError] = useState<string | null>(null);
 	const [plexUrl, setPlexUrl] = useState("https://app.plex.tv/desktop");
@@ -18,6 +18,10 @@ function App() {
 				if (savedUrl) {
 					setPlexUrl(savedUrl);
 				}
+
+				// Load saved zoom level
+				const savedZoomLevel = await invoke<number>("get_saved_zoom_level");
+				setZoomLevel(savedZoomLevel);
 			} catch (err) {
 				console.error("Failed during initialization:", err);
 				// Make window visible even if there was an error
