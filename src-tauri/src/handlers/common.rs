@@ -1,11 +1,6 @@
-use once_cell::sync::Lazy;
 use serde_json::json;
-use std::sync::Mutex;
 use tauri::{AppHandle, Manager, Runtime};
 use tauri_plugin_store::StoreExt;
-
-// Store the current zoom level (default 1.0)
-pub static ZOOM_LEVEL: Lazy<Mutex<f64>> = Lazy::new(|| Mutex::new(1.0));
 
 // Constants
 pub const SETTINGS_FILENAME: &str = "plex_settings.json";

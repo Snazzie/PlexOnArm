@@ -1,6 +1,6 @@
 use tauri::{AppHandle, Runtime};
 
-use crate::handlers::common::{get_window_by_label, load_zoom_level, save_zoom_level, ZOOM_LEVEL};
+use crate::handlers::common::{get_window_by_label, load_zoom_level, save_zoom_level};
 
 // Function to initialize zoom level from settings
 pub fn init_zoom_level<R: Runtime>(app_handle: &AppHandle<R>) -> Result<(), String> {
@@ -9,10 +9,13 @@ pub fn init_zoom_level<R: Runtime>(app_handle: &AppHandle<R>) -> Result<(), Stri
     // Load the zoom level from the store
     match load_zoom_level(app_handle.clone()) {
         Ok(level) => {
-            // Update the global zoom level
-            let mut zoom_level = ZOOM_LEVEL.lock().map_err(|e| e.to_string())?;
-            *zoom_level = level;
             println!("Loaded zoom level from settings: {}", level);
+            // Get the window by label or fall back to default windows
+            let window = get_window_by_label(app_handle, None)?;
+            // Apply the zoom level to the window
+            window
+                .set_zoom(level)
+                .map_err(|e| format!("Failed to set initial zoom level: {}", e))?;
             Ok(())
         }
         Err(e) => {
@@ -30,9 +33,9 @@ pub fn get_saved_zoom_level<R: Runtime>(
 ) -> Result<f64, String> {
     println!("Getting saved zoom level for window: {:?}", window_label);
 
-    // Get the current zoom level
-    let zoom_level = *ZOOM_LEVEL.lock().map_err(|e| e.to_string())?;
-    println!("Current zoom level: {}", zoom_level);
+    // Load the zoom level from the store
+    let zoom_level = load_zoom_level(app_handle.clone())?;
+    println!("Loaded zoom level: {}", zoom_level);
 
     // Get the window by label or fall back to default windows
     let window = get_window_by_label(&app_handle, window_label)?;
@@ -70,28 +73,28 @@ pub fn adjust_zoom<R: Runtime>(
     // Get the window by label or fall back to default windows
     let window = get_window_by_label(&app_handle, window_label)?;
 
-    // Get current zoom level and calculate new level
-    let mut zoom_level = ZOOM_LEVEL.lock().map_err(|e| e.to_string())?;
+    // Load current zoom level
+    let mut zoom_level = load_zoom_level(app_handle.clone())?;
 
     // Adjust zoom level (increase or decrease by 0.1)
     if zoom_in {
-        *zoom_level = (*zoom_level + 0.1).min(2.0); // Max zoom: 2.0 (200%)
+        zoom_level = (zoom_level + 0.1).min(2.0); // Max zoom: 2.0 (200%)
     } else {
-        *zoom_level = (*zoom_level - 0.1).max(0.5); // Min zoom: 0.5 (50%)
+        zoom_level = (zoom_level - 0.1).max(0.5); // Min zoom: 0.5 (50%)
     }
 
-    println!("New zoom level: {}", *zoom_level);
+    println!("New zoom level: {}", zoom_level);
 
     // Try to set zoom level
-    let zoom_result = window.set_zoom(*zoom_level);
+    let zoom_result = window.set_zoom(zoom_level);
 
     // Handle the result
     match zoom_result {
         Ok(_) => {
-            println!("Successfully set zoom level to: {}", *zoom_level);
+            println!("Successfully set zoom level to: {}", zoom_level);
 
             // Save the zoom level to the store
-            match save_zoom_level(app_handle, *zoom_level) {
+            match save_zoom_level(app_handle, zoom_level) {
                 Ok(_) => {
                     println!("Zoom level saved to settings");
                 }
@@ -100,7 +103,7 @@ pub fn adjust_zoom<R: Runtime>(
                 }
             }
 
-            Ok(*zoom_level)
+            Ok(zoom_level)
         }
         Err(e) => {
             let error_msg = format!("Failed to set zoom level: {}", e);
