@@ -290,6 +290,15 @@ pub const PIP_OVERLAY_SCRIPT: &str = r#"
   document.addEventListener('keydown', function(event) {
     // Check if Alt key is pressed and P key is pressed
     if (event.altKey && event.key === 'p') {
+      // Check if we're on the initial screen by looking for the confirmation container
+      const isOnInitialScreen = document.querySelector('.confirmation-container') !== null;
+
+      // Only proceed if we're NOT on the initial screen
+      if (isOnInitialScreen) {
+        console.log('Ignoring Alt+P on initial screen in overlay script');
+        return;
+      }
+
       // Toggle PiP mode state
       isPipMode = !isPipMode;
       console.log('PiP mode toggled via Alt+P to:', isPipMode);
@@ -333,17 +342,37 @@ pub const PIP_OVERLAY_SCRIPT: &str = r#"
   // Check PiP state on load
   try {
     if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {
-      window.__TAURI_INTERNALS__.invoke('is_pip_active')
-        .then(state => {
-          if (state) {
-            console.log('PiP mode is active on script load');
-            isPipMode = true;
-            createDraggableOverlay();
-          }
-        })
-        .catch(err => {
-          console.warn('Failed to check PiP state on load:', err);
-        });
+      // First check if we're on the initial screen
+      const isOnInitialScreen = document.querySelector('.confirmation-container') !== null;
+
+      // If we're on the initial screen, make sure PiP is disabled
+      if (isOnInitialScreen) {
+        console.log('On initial screen, ensuring PiP is disabled');
+        if (isPipMode) {
+          isPipMode = false;
+          removeDraggableOverlay();
+
+          // Reset the PiP state in the backend
+          window.__TAURI_INTERNALS__.invoke('toggle_pip', {
+            windowLabel: window.__TAURI_INTERNALS__?.metadata?.currentWindow?.label || 'main'
+          }).catch(err => {
+            console.warn('Failed to reset PiP state on initial screen:', err);
+          });
+        }
+      } else {
+        // Only check and restore PiP state if we're not on the initial screen
+        window.__TAURI_INTERNALS__.invoke('is_pip_active')
+          .then(state => {
+            if (state) {
+              console.log('PiP mode is active on script load');
+              isPipMode = true;
+              createDraggableOverlay();
+            }
+          })
+          .catch(err => {
+            console.warn('Failed to check PiP state on load:', err);
+          });
+      }
     } else {
       console.warn('Tauri API not available to check PiP state');
     }
