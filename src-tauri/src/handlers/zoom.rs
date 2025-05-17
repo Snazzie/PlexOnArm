@@ -3,27 +3,6 @@ use tauri::{AppHandle, Emitter, Runtime};
 use crate::handlers::common::{get_window_by_label, load_zoom_level, save_zoom_level};
 
 // Function to initialize zoom level from settings
-pub fn init_zoom_level<R: Runtime>(app_handle: &AppHandle<R>) -> Result<(), String> {
-    println!("Initializing zoom level from settings");
-
-    // Load the zoom level from the store
-    match load_zoom_level(app_handle.clone()) {
-        Ok(level) => {
-            println!("Loaded zoom level from settings: {}", level);
-            // Get the window by label or fall back to default windows
-            let window = get_window_by_label(app_handle, None)?;
-            // Apply the zoom level to the window
-            window
-                .set_zoom(level)
-                .map_err(|e| format!("Failed to set initial zoom level: {}", e))?;
-            Ok(())
-        }
-        Err(e) => {
-            eprintln!("Failed to load zoom level from settings: {}", e);
-            Err(e)
-        }
-    }
-}
 
 // Command to get the saved zoom level and apply it to a window
 #[tauri::command]
