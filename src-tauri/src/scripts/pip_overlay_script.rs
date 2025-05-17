@@ -43,15 +43,18 @@ pub const PIP_OVERLAY_SCRIPT: &str = r#"
     exitButton.style.fontSize = '12px';
     exitButton.style.fontFamily = 'Arial, sans-serif';
     exitButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.3)';
+    exitButton.style.userSelect = 'none'; // Prevent text selection
 
     // Create icon and text elements
     const icon = document.createElement('span');
     icon.style.marginRight = '5px';
     icon.style.fontSize = '14px';
     icon.style.fontWeight = 'bold';
+    icon.style.userSelect = 'none'; // Prevent text selection
     icon.innerHTML = '✕';
 
     const text = document.createElement('span');
+    text.style.userSelect = 'none'; // Prevent text selection
     text.textContent = 'Exit Picture in Picture';
 
     // Add icon and text to button
@@ -81,6 +84,7 @@ pub const PIP_OVERLAY_SCRIPT: &str = r#"
     dragButton.style.fontSize = '12px';
     dragButton.style.fontFamily = 'Arial, sans-serif';
     dragButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.3)';
+    dragButton.style.userSelect = 'none'; // Prevent text selection
     dragButton.textContent = 'Drag to move window';
 
     // Add hover effect to the drag button
