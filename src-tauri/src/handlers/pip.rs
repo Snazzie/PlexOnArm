@@ -24,6 +24,7 @@ struct WindowState {
     position: Option<tauri::Position>,
     always_on_top: bool,
     decorations: bool,
+    maximized: bool,
 }
 
 impl Default for WindowState {
@@ -36,6 +37,7 @@ impl Default for WindowState {
             position: Some(tauri::Position::Logical(LogicalPosition { x: 0.0, y: 0.0 })),
             always_on_top: false,
             decorations: true,
+            maximized: false,
         }
     }
 }
@@ -88,6 +90,16 @@ pub fn toggle_pip<R: Runtime>(
         window
             .set_focus()
             .map_err(|e| format!("Failed to focus window: {}", e))?;
+
+        // Restore maximized state if it was maximized before
+        if saved_state.maximized {
+            println!("Restoring maximized state");
+            window
+                .maximize()
+                .map_err(|e| format!("Failed to restore maximized state: {}", e))?;
+        } else {
+            println!("Window was not maximized before, not restoring maximized state");
+        }
     } else {
         // Save current window state before entering PIP mode
         let mut current_state = WindowState::default();
@@ -110,6 +122,12 @@ pub fn toggle_pip<R: Runtime>(
         // Save decorations state
         if let Ok(decorations) = window.is_decorated() {
             current_state.decorations = decorations;
+        }
+
+        // Save maximized state
+        if let Ok(maximized) = window.is_maximized() {
+            current_state.maximized = maximized;
+            println!("Saved maximized state: {}", maximized);
         }
 
         // Store the current state
