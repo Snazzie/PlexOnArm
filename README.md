@@ -4,6 +4,10 @@
  <img src="./Assets/POT.svg" alt="PlexOnTauri Logo" width="128" height="128">
    <br/>
    Plex On Tauri
+   <br/>
+   <a href="https://github.com/Snazzie/PlexOnTauri/releases/latest">
+     <img src="https://img.shields.io/github/v/release/Snazzie/PlexOnTauri?style=flat-square&label=Latest Release" alt="Latest Release Version">
+   </a>
 </p>
 A lightweight, cross-platform desktop application that provides a dedicated Plex Media Player experience optimized for ARM-based devices (and works great on x86 too!).
 
@@ -35,7 +39,7 @@ A lightweight, cross-platform desktop application that provides a dedicated Plex
 
 ### Pre-built Binaries
 
-Download the latest release for your platform from the [Releases](https://github.com/yourusername/plexontauri/releases) page.
+Download the latest release for your platform from the [Releases](https://github.com/Snazzie/PlexOnTauri/releases) page.
 
 ### Building from Source
 
