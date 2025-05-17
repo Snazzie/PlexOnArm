@@ -1,0 +1,56 @@
+name: Bump Version
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Bump patch version
+        id: bump-version
+        run: |
+          # Read the current version from tauri.conf.json
+          CURRENT_VERSION=$(node -e "console.log(require('./src-tauri/tauri.conf.json').version)")
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Split the version into major, minor, and patch
+          IFS='.' read -r -a VERSION_PARTS <<< "$CURRENT_VERSION"
+          MAJOR="${VERSION_PARTS[0]}"
+          MINOR="${VERSION_PARTS[1]}"
+          PATCH="${VERSION_PARTS[2]}"
+          
+          # Increment the patch version
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          echo "New version: $NEW_VERSION"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          
+          # Update the version in tauri.conf.json
+          node -e "
+            const fs = require('fs');
+            const path = './src-tauri/tauri.conf.json';
+            const config = require(path);
+            config.version = '$NEW_VERSION';
+            fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\n');
+          "
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add src-tauri/tauri.conf.json
+          git commit -m "Bump version to ${{ steps.bump-version.outputs.new_version }}"
+          git push

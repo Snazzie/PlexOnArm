@@ -8,6 +8,7 @@ on:
       - 'Assets/**'
       - 'README.md'
       - '**/*.md'
+      - '.github/workflows/bump-version.yml'
 
 # This workflow will trigger on each push to the `master` branch to create or update a GitHub release, build your app, and upload the artifacts to the release.
 # It will skip if only markdown files (including README) are changed.
