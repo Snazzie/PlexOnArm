@@ -1,7 +1,5 @@
-use super::{
-    fullscreen_script::FULLSCREEN_SCRIPT, pip_overlay_script::PIP_OVERLAY_SCRIPT,
-    pip_script::PIP_SCRIPT, zoom_script::ZOOM_SCRIPT,
-};
+// The constants are now directly available from the parent module
+use super::{FULLSCREEN_SCRIPT, PIP_OVERLAY_SCRIPT, PIP_SCRIPT, ZOOM_SCRIPT};
 
 pub fn init_script() -> String {
     format!(
