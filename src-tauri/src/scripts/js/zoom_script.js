@@ -1,5 +1,5 @@
 // Add keyboard shortcut listeners for zoom control
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', (event) => {
     // Check if Ctrl key is pressed
     if (event.ctrlKey) {
         try {
@@ -28,20 +28,20 @@ document.addEventListener('keydown', function(event) {
                         zoomIn: true,
                         windowLabel: windowLabel
                     });
-                    console.log('Invoked adjust_zoom with zoom in for window:', windowLabel);
+                    console.debug('Invoked adjust_zoom with zoom in for window:', windowLabel);
                 }
 
                 // Check for Ctrl + Minus (zoom out)
                 else if (event.key === '-' || event.keyCode === 109 || event.keyCode === 189) {
                     event.preventDefault(); // Prevent default browser zoom
-                    console.log('Zoom out shortcut detected');
+                    console.debug('Zoom out shortcut detected');
 
                     // Invoke the adjust_zoom command with zoom_in=false
                     window.__TAURI_INTERNALS__.invoke('adjust_zoom', {
                         zoomIn: false,
                         windowLabel: windowLabel
                     });
-                    console.log('Invoked adjust_zoom with zoom out for window:', windowLabel);
+                    console.debug('Invoked adjust_zoom with zoom out for window:', windowLabel);
                 }
             } else {
                 console.error('__TAURI_INTERNALS__ is not available');
@@ -62,9 +62,9 @@ if (window.__TAURI_INTERNALS__) {
             if (window.__TAURI_INTERNALS__.metadata &&
                 window.__TAURI_INTERNALS__.metadata.currentWindow) {
                 windowLabel = window.__TAURI_INTERNALS__.metadata.currentWindow.label;
-                console.log('Initializing zoom level for window:', windowLabel);
+                console.debug('Initializing zoom level for window:', windowLabel);
             } else {
-                console.log('Window metadata not available, using null window label');
+                console.debug('Window metadata not available, using null window label');
             }
         } catch (metadataErr) {
             console.warn('Could not access window metadata:', metadataErr);
@@ -76,7 +76,7 @@ if (window.__TAURI_INTERNALS__) {
             window.__TAURI_INTERNALS__.invoke('get_saved_zoom_level', {
                 windowLabel: windowLabel
             }).then(zoomLevel => {
-                console.log('Retrieved saved zoom level:', zoomLevel);
+                console.debug('Retrieved saved zoom level:', zoomLevel);
             }).catch(err => {
                 console.error('Error getting saved zoom level:', err);
             });

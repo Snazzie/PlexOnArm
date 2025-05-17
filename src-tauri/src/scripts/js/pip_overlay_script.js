@@ -106,7 +106,7 @@ function createDraggableOverlay() {
         const windowLabel = window.__TAURI_INTERNALS__?.metadata?.currentWindow?.label || 'main';
 
         if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {
-          console.log('Starting window drag from drag button');
+          console.debug('Starting window drag from drag button');
           window.__TAURI_INTERNALS__.invoke('drag_window', {
             windowLabel: windowLabel
           });
@@ -135,7 +135,7 @@ function createDraggableOverlay() {
   // Add click handler to exit PIP mode
   exitButton.addEventListener('click', (e) => {
     e.stopPropagation(); // Prevent triggering drag
-    console.log('Exit PIP button clicked');
+    console.debug('Exit PIP button clicked');
 
     // Toggle PIP mode off
     isPipMode = false;
@@ -147,7 +147,7 @@ function createDraggableOverlay() {
         window.__TAURI_INTERNALS__.invoke('toggle_pip', {
           windowLabel: windowLabel
         });
-        console.log('Invoked toggle_pip to exit PIP mode');
+        console.debug('Invoked toggle_pip to exit PIP mode');
       }
     } catch (err) {
       console.error('Error exiting PIP mode:', err);
@@ -203,7 +203,7 @@ function createDraggableOverlay() {
     if (e.relatedTarget === null || e.relatedTarget.nodeName === 'HTML') {
       exitButton.style.opacity = '0';
       dragButton.style.opacity = '0';
-      console.log('Mouse left window, hiding PIP controls');
+      console.debug('Mouse left window, hiding PIP controls');
     }
   };
   document.addEventListener('mouseout', mouseOutHandler);
@@ -212,7 +212,7 @@ function createDraggableOverlay() {
   mouseLeaveHandler = () => {
     exitButton.style.opacity = '0';
     dragButton.style.opacity = '0';
-    console.log('Mouse left window (mouseleave), hiding PIP controls');
+    console.debug('Mouse left window (mouseleave), hiding PIP controls');
   };
   window.addEventListener('mouseleave', mouseLeaveHandler);
 
@@ -221,12 +221,12 @@ function createDraggableOverlay() {
   document.body.appendChild(exitButton);
   document.body.appendChild(dragButton);
 
-  console.log('PIP controls added to DOM');
+  console.debug('PIP controls added to DOM');
 
   // We're using the drag button instead of global event listeners
   // No need to set up global drag event listeners
 
-  console.log('Draggable overlay and exit button created and attached to DOM');
+  console.debug('Draggable overlay and exit button created and attached to DOM');
 }
 
 // Store event listener references for cleanup
@@ -255,7 +255,7 @@ function removeEventListeners() {
     mouseLeaveHandler = null;
   }
 
-  console.log('All event listeners removed');
+  console.debug('All event listeners removed');
 }
 
 function removeDraggableOverlay() {
@@ -266,21 +266,21 @@ function removeDraggableOverlay() {
   if (overlay) {
     overlay.remove();
     overlay = null;
-    console.log('Draggable overlay removed from DOM');
+    console.debug('Draggable overlay removed from DOM');
   }
 
   // Remove the exit button separately
   if (exitButton) {
     exitButton.remove();
     exitButton = null;
-    console.log('Exit button removed from DOM');
+    console.debug('Exit button removed from DOM');
   }
 
   // Remove the drag button separately
   if (dragButton) {
     dragButton.remove();
     dragButton = null;
-    console.log('Drag button removed from DOM');
+    console.debug('Drag button removed from DOM');
   }
 }
 
@@ -293,13 +293,13 @@ document.addEventListener('keydown', (event) => {
 
     // Only proceed if we're NOT on the initial screen
     if (isOnInitialScreen) {
-      console.log('Ignoring Alt+P on initial screen in overlay script');
+      console.debug('Ignoring Alt+P on initial screen in overlay script');
       return;
     }
 
     // Toggle PiP mode state
     isPipMode = !isPipMode;
-    console.log('PiP mode toggled via Alt+P to:', isPipMode);
+    console.debug('PiP mode toggled via Alt+P to:', isPipMode);
 
     // Toggle the draggable overlay
     if (isPipMode) {
@@ -318,7 +318,7 @@ try {
 
     // If we're on the initial screen, make sure PiP is disabled
     if (isOnInitialScreen) {
-      console.log('On initial screen, ensuring PiP is disabled');
+      console.debug('On initial screen, ensuring PiP is disabled');
       if (isPipMode) {
         isPipMode = false;
         removeDraggableOverlay();
@@ -335,7 +335,7 @@ try {
       window.__TAURI_INTERNALS__.invoke('is_pip_active')
         .then(state => {
           if (state) {
-            console.log('PiP mode is active on script load');
+            console.debug('PiP mode is active on script load');
             isPipMode = true;
             createDraggableOverlay();
           }

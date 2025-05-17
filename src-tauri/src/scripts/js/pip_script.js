@@ -1,16 +1,16 @@
 // Add keyboard shortcut listener for Alt+P (toggle PiP)
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', (event) => {
     // Check if Alt key is pressed and P key is pressed
     if (event.altKey && event.key === 'p') {
         event.preventDefault(); // Prevent default browser behavior
-        console.log('Alt+P shortcut detected for PiP toggle');
+        console.debug('Alt+P shortcut detected for PiP toggle');
 
         // Check if we're on the initial screen by looking for the confirmation container
         const isOnInitialScreen = document.querySelector('.confirmation-container') !== null;
 
         // Only proceed if we're NOT on the initial screen
         if (isOnInitialScreen) {
-            console.log('Ignoring Alt+P on initial screen');
+            console.debug('Ignoring Alt+P on initial screen');
             return;
         }
 
@@ -24,7 +24,7 @@ document.addEventListener('keydown', function(event) {
                         window.__TAURI_INTERNALS__.metadata.currentWindow) {
                         windowLabel = window.__TAURI_INTERNALS__.metadata.currentWindow.label;
                     } else {
-                        console.log('Window metadata not available for PiP toggle, using null window label');
+                        console.debug('Window metadata not available for PiP toggle, using null window label');
                     }
                 } catch (metadataErr) {
                     console.warn('Could not access window metadata for PiP toggle:', metadataErr);
@@ -34,7 +34,7 @@ document.addEventListener('keydown', function(event) {
                 window.__TAURI_INTERNALS__.invoke('toggle_pip', {
                     windowLabel: windowLabel
                 });
-                console.log('Invoked toggle_pip for window:', windowLabel);
+                console.debug('Invoked toggle_pip for window:', windowLabel);
             } else {
                 console.error('__TAURI_INTERNALS__ is not available');
             }
