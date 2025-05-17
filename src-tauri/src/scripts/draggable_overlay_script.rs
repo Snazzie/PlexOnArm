@@ -4,11 +4,22 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
   let isDragging = false;
   let isPipMode = false;
 
+  // Variables to track drag state
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let dragThreshold = 5; // Pixels to move before activating drag
+  let mouseDownTime = 0;
+  let isDragIntent = false;
+
+  // Reference to exit button
+  let exitButton = null;
+
   function createDraggableOverlay() {
     if (overlay) {
       return; // Overlay already exists
     }
 
+    // Create main overlay
     overlay = document.createElement('div');
     overlay.id = 'draggable-overlay';
     overlay.style.position = 'fixed';
@@ -17,59 +28,236 @@ pub const DRAGGABLE_OVERLAY_SCRIPT: &str = r#"
     overlay.style.width = '100%';
     overlay.style.height = '100%';
     overlay.style.zIndex = '9999'; // Ensure it's on top
-    overlay.style.cursor = 'grab'; // Indicate it's draggable
+    overlay.style.cursor = 'default'; // Default cursor
     overlay.style.backgroundColor = 'transparent'; // Make it transparent
-    overlay.style.pointerEvents = 'auto'; // Ensure it captures mouse events
+    overlay.style.pointerEvents = 'none'; // Allow clicks to pass through by default
 
-    // Add event listeners for dragging
-    overlay.addEventListener('mousedown', (e) => {
-      // Only start dragging on left mouse button
-      if (e.button === 0) {
-        isDragging = true;
-        overlay.style.cursor = 'grabbing';
+    // Create exit button (initially hidden)
+    exitButton = document.createElement('div');
+    exitButton.id = 'pip-exit-button';
+    exitButton.style.position = 'absolute';
+    exitButton.style.top = '5px';
+    exitButton.style.left = '5px';
+    exitButton.style.padding = '5px 10px';
+    exitButton.style.borderRadius = '4px';
+    exitButton.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    exitButton.style.color = 'white';
+    exitButton.style.display = 'flex';
+    exitButton.style.alignItems = 'center';
+    exitButton.style.cursor = 'pointer';
+    exitButton.style.zIndex = '10000'; // Above the overlay
+    exitButton.style.opacity = '0'; // Start hidden
+    exitButton.style.transition = 'opacity 0.2s ease-in-out';
+    exitButton.style.pointerEvents = 'auto'; // Always clickable
+    exitButton.style.fontSize = '12px';
+    exitButton.style.fontFamily = 'Arial, sans-serif';
+    exitButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.3)';
 
-        // Use a simple approach for window dragging
-        try {
-          // Get the current window label
+    // Create icon and text elements
+    const icon = document.createElement('span');
+    icon.style.marginRight = '5px';
+    icon.style.fontSize = '14px';
+    icon.style.fontWeight = 'bold';
+    icon.innerHTML = '✕';
+
+    const text = document.createElement('span');
+    text.textContent = 'Exit Picture in Picture';
+
+    // Add icon and text to button
+    exitButton.appendChild(icon);
+    exitButton.appendChild(text);
+
+    exitButton.title = 'Exit Picture-in-Picture mode';
+
+    // Add hover effect to the button
+    exitButton.addEventListener('mouseover', () => {
+      exitButton.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
+      exitButton.style.boxShadow = '0 3px 6px rgba(0, 0, 0, 0.5)';
+    });
+    exitButton.addEventListener('mouseout', () => {
+      exitButton.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+      exitButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.3)';
+    });
+
+    // Add click handler to exit PIP mode
+    exitButton.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent triggering drag
+      console.log('Exit PIP button clicked');
+
+      // Toggle PIP mode off
+      isPipMode = false;
+
+      // Invoke the toggle_pip command to exit PIP mode
+      try {
+        if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {
           const windowLabel = window.__TAURI_INTERNALS__?.metadata?.currentWindow?.label || 'main';
+          window.__TAURI_INTERNALS__.invoke('toggle_pip', {
+            windowLabel: windowLabel
+          });
+          console.log('Invoked toggle_pip to exit PIP mode');
+        }
+      } catch (err) {
+        console.error('Error exiting PIP mode:', err);
+      }
 
-          // Use the drag_window command
-          if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {
-            console.log('Starting window drag for window:', windowLabel);
-            window.__TAURI_INTERNALS__.invoke('drag_window', {
-              windowLabel: windowLabel
-            });
-          } else {
-            console.warn('Tauri API not available for dragging');
-          }
-        } catch (err) {
-          console.error('Error starting window drag:', err);
+      // Remove the overlay
+      removeDraggableOverlay();
+    });
+
+    // Add hover detection to show/hide exit button
+    overlay.addEventListener('mouseover', () => {
+      if (exitButton) {
+        exitButton.style.opacity = '1';
+      }
+    });
+
+    overlay.addEventListener('mouseout', (e) => {
+      // Check if we're still within the overlay bounds
+      const rect = overlay.getBoundingClientRect();
+      if (
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom
+      ) {
+        if (exitButton) {
+          exitButton.style.opacity = '0';
         }
       }
     });
 
-    // Change cursor back when mouse is released
-    document.addEventListener('mouseup', () => {
+    // Add elements to the DOM
+    overlay.appendChild(exitButton);
+    document.body.appendChild(overlay);
+
+    // Set up event listeners for dragging
+    setupEventListeners();
+
+    console.log('Draggable overlay and exit button created and attached to DOM');
+  }
+
+  // Store event listener references for cleanup
+  let mouseDownHandler = null;
+  let mouseMoveHandler = null;
+  let mouseUpHandler = null;
+
+  function setupEventListeners() {
+    // Remove any existing listeners first
+    removeEventListeners();
+
+    // Create new handlers
+    mouseDownHandler = (e) => {
+      // Only track left mouse button
+      if (e.button === 0 && isPipMode) {
+        // Store initial position and time
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        mouseDownTime = Date.now();
+        isDragIntent = false;
+
+        // Temporarily capture mouse events to detect dragging
+        if (overlay) {
+          overlay.style.pointerEvents = 'auto';
+        }
+      }
+    };
+
+    mouseMoveHandler = (e) => {
+      // Only process if we're in PiP mode and mouse is down
+      if (isPipMode && Date.now() - mouseDownTime < 1000 && mouseDownTime > 0) {
+        // Calculate distance moved
+        const dx = Math.abs(e.clientX - dragStartX);
+        const dy = Math.abs(e.clientY - dragStartY);
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        // If moved more than threshold, it's a drag
+        if (distance > dragThreshold && !isDragIntent) {
+          isDragIntent = true;
+          isDragging = true;
+          if (overlay) {
+            overlay.style.cursor = 'grabbing';
+          }
+
+          // Start window dragging
+          try {
+            const windowLabel = window.__TAURI_INTERNALS__?.metadata?.currentWindow?.label || 'main';
+
+            if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {
+              console.log('Starting window drag for window:', windowLabel);
+              window.__TAURI_INTERNALS__.invoke('drag_window', {
+                windowLabel: windowLabel
+              });
+            }
+          } catch (err) {
+            console.error('Error starting window drag:', err);
+          }
+        }
+      }
+    };
+
+    mouseUpHandler = () => {
+      // Reset all drag tracking variables
+      mouseDownTime = 0;
+      isDragIntent = false;
+
       if (isDragging) {
         isDragging = false;
         if (overlay) {
-          overlay.style.cursor = 'grab';
+          overlay.style.cursor = 'default';
         }
       }
-    });
 
-    // Add to document body
-    document.body.appendChild(overlay);
-    console.log('Draggable overlay created and attached to DOM');
+      // Return to click-through mode
+      if (overlay) {
+        overlay.style.pointerEvents = 'none';
+      }
+    };
+
+    // Add the event listeners
+    document.addEventListener('mousedown', mouseDownHandler);
+    document.addEventListener('mousemove', mouseMoveHandler);
+    document.addEventListener('mouseup', mouseUpHandler);
+
+    console.log('Event listeners for dragging set up');
+  }
+
+  function removeEventListeners() {
+    // Remove event listeners if they exist
+    if (mouseDownHandler) {
+      document.removeEventListener('mousedown', mouseDownHandler);
+      mouseDownHandler = null;
+    }
+
+    if (mouseMoveHandler) {
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      mouseMoveHandler = null;
+    }
+
+    if (mouseUpHandler) {
+      document.removeEventListener('mouseup', mouseUpHandler);
+      mouseUpHandler = null;
+    }
+
+    console.log('Event listeners for dragging removed');
   }
 
   function removeDraggableOverlay() {
     if (overlay) {
       // Clean up
       isDragging = false;
+      mouseDownTime = 0;
+      isDragIntent = false;
+
+      // Remove event listeners
+      removeEventListeners();
+
+      // Clean up exit button reference
+      exitButton = null;
+
+      // Remove the overlay (which also removes the exit button since it's a child)
       overlay.remove();
       overlay = null;
-      console.log('Draggable overlay removed from DOM');
+      console.log('Draggable overlay and exit button removed from DOM');
     }
   }
 
