@@ -10,16 +10,22 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "withGlobalTauri": true,
     "windows": [
       {
         "title": "Plex On Tauri",
         "width": 1024,
         "height": 768,
         "visible": false,
-        "maximized": false
+        "maximized": false,
+        "browserExtensionsEnabled": true,
+        "zoomHotkeysEnabled": true,
+        "devtools": true,
+        "additionalBrowserArgs": "--enable-gpu --enable-accelerated-video-decode --enable-features=msVideoSuper --enable-features=edge-video-super-resolution"
       }
     ],
     "security": {
+      "dangerousDisableAssetCspModification": true,
       "csp": {
         "default-src": [
           "'self'",
