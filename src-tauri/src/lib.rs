@@ -1,8 +1,9 @@
 mod handlers;
+mod scripts;
 
 use handlers::{adjust_zoom, get_saved_zoom_level, toggle_fullscreen, toggle_pip};
-mod script;
 
+use scripts::script::init_script;
 #[cfg(any(target_os = "macos", windows, target_os = "linux"))]
 use tauri_plugin_window_state;
 
@@ -27,7 +28,7 @@ pub fn run() {
             toggle_pip
         ])
         // Use the initialization script for all webviews
-        .append_invoke_initialization_script(script::INIT_SCRIPT)
+        .append_invoke_initialization_script(init_script())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
