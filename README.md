@@ -19,6 +19,17 @@ A lightweight, cross-platform desktop application that provides a dedicated Plex
 - **Fixes Plex Windows Arm's annoying bugs**: No more skipping, black screen and stuttery UI!
 - **Optimized Performance**: Built with Tauri for minimal resource usage and fast startup times.
 - **Change Plex Url**: Change the Plex URL to any Plex server you want. i.e tailscale VPN or local network
+- **Picture in Picture Mode**: Toggle between full-screen and picture-in-picture mode with a simple keyboard shortcut (Alt + P).
+
+![explorer_zNifHSnvI8](https://github.com/user-attachments/assets/5d544362-76cf-493c-a826-f240bd2dc3e7)
+
+## Usage
+
+1. Launch the Plex On Tauri application
+2. Click "Continue to Plex" on the welcome screen
+3. Log in to your Plex account
+4. Ensure `Use alternate streaming protocol for video playback` is disabled. Settings > Plex Web > Debug > Use alternate streaming protocol for video playback
+5. Enjoy your media!
 
 ## Installation
 
@@ -33,14 +44,6 @@ Download the latest release for your platform from the [Releases](https://github
 3. Install pnpm: `npm install -g pnpm`
 4. Install dependencies: `pnpm install`
 5. Build the application: `pnpm tauri build`
-
-## Usage
-
-1. Launch the Plex On Tauri application
-2. Click "Continue to Plex" on the welcome screen
-3. Log in to your Plex account
-4. Ensure `Use alternate streaming protocol for video playback` is disabled. Settings > Plex Web > Debug > Use alternate streaming protocol for video playback
-5. Enjoy your media!
 
 ## Development
 

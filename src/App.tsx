@@ -90,8 +90,11 @@ function App() {
 				<div className="zoom-level-display">
 					Zoom: {(zoomLevel * 100).toFixed(0)}%
 				</div>
-				<p className="zoom-controls-text">
+				<p >
 					Use Ctrl + and Ctrl - to adjust zoom.
+				</p>
+        <p >
+					Use Alt + P to toggle Picture In Picture mode.
 				</p>
 				<div className="url-input-container">
 					<label htmlFor="plex-url">Plex Client URL:</label>
