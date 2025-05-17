@@ -26,7 +26,6 @@ function App() {
 
 				// Get the main window
 				const mainWindow = await WebviewWindow.getByLabel("main");
-				mainWindow?.hide();
 				if (mainWindow) {
 					// Now show the window
 					await mainWindow.show();
@@ -37,8 +36,6 @@ function App() {
 				try {
 					const mainWindow = await WebviewWindow.getByLabel("main");
 					if (mainWindow) {
-						// Ensure the window is not maximized before showing it
-						// Now show the window
 						await mainWindow.show();
 					}
 				} catch (showErr) {
@@ -74,10 +71,6 @@ function App() {
 			if (mainWindow) {
 				await mainWindow.setTitle("Plex On Tauri");
 			}
-
-			// Now restore the FULL window state including maximized state
-			// This will apply any previously saved maximized state
-			await restoreWindowState();
 
 			console.log("Restored full window state including maximized state");
 
