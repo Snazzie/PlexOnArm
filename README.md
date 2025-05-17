@@ -39,7 +39,8 @@ Download the latest release for your platform from the [Releases](https://github
 1. Launch the Plex On Tauri application
 2. Click "Continue to Plex" on the welcome screen
 3. Log in to your Plex account
-4. Enjoy your media!
+4. Ensure `Use alternate streaming protocol for video playback` is disabled. Settings > Plex Web > Debug > Use alternate streaming protocol for video playback
+5. Enjoy your media!
 
 ## Development
 
