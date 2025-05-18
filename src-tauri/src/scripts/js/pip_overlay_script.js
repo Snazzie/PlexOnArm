@@ -105,7 +105,7 @@ function createDraggableOverlay() {
       try {
         const windowLabel = window.__TAURI_INTERNALS__?.metadata?.currentWindow?.label || 'main';
 
-        if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {
+        if (window.__TAURI_INTERNALS__?.invoke) {
           console.debug('Starting window drag from drag button');
           window.__TAURI_INTERNALS__.invoke('drag_window', {
             windowLabel: windowLabel
@@ -142,7 +142,7 @@ function createDraggableOverlay() {
 
     // Invoke the toggle_pip command to exit PIP mode
     try {
-      if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {
+      if (window.__TAURI_INTERNALS__?.invoke) {
         const windowLabel = window.__TAURI_INTERNALS__?.metadata?.currentWindow?.label || 'main';
         window.__TAURI_INTERNALS__.invoke('toggle_pip', {
           windowLabel: windowLabel
@@ -312,7 +312,7 @@ document.addEventListener('keydown', (event) => {
 
 // Check PiP state on load
 try {
-  if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {
+  if (window.__TAURI_INTERNALS__?.invoke) {
     // First check if we're on the initial screen
     const isOnInitialScreen = document.querySelector('.confirmation-container') !== null;
 

@@ -13,8 +13,7 @@ document.addEventListener('fullscreenchange', (event) => {
             let windowLabel = null;
             try {
                 // Check if metadata and currentWindow exist
-                if (window.__TAURI_INTERNALS__.metadata &&
-                    window.__TAURI_INTERNALS__.metadata.currentWindow) {
+                if (window.__TAURI_INTERNALS__.metadata?.currentWindow) {
                     windowLabel = window.__TAURI_INTERNALS__.metadata.currentWindow.label;
                     console.debug('Current window label:', windowLabel);
                 } else {

@@ -20,8 +20,7 @@ document.addEventListener('keydown', (event) => {
                 let windowLabel = null;
                 try {
                     // Check if metadata and currentWindow exist
-                    if (window.__TAURI_INTERNALS__.metadata &&
-                        window.__TAURI_INTERNALS__.metadata.currentWindow) {
+                    if (window.__TAURI_INTERNALS__.metadata?.currentWindow) {
                         windowLabel = window.__TAURI_INTERNALS__.metadata.currentWindow.label;
                     } else {
                         console.debug('Window metadata not available for PiP toggle, using null window label');
