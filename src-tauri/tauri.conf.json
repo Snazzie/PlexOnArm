@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Plex On Tauri",
+  "productName": "TauriPlex Client",
   "version": "1.0.2",
-  "identifier": "com.plexontauri.app",
+  "identifier": "com.tauriplex.app",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Plex On Tauri",
+        "title": "TauriPlex Client",
         "width": 1024,
         "height": 768,
         "visible": false,

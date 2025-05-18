@@ -85,7 +85,7 @@ function App() {
     return (
         <>
             <div className="confirmation-container">
-                <h2>Welcome to Plex on Tauri</h2>
+                <h2>Welcome to TauriPlex Client</h2>
                 <p>This application will load Plex in the current window.</p>
                 <div className="zoom-level-display">
                     Zoom: {(zoomLevel * 100).toFixed(0)}%
@@ -93,7 +93,7 @@ function App() {
                 <p>Use Ctrl + and Ctrl - to adjust zoom.</p>
                 <p>Use Alt + P to toggle Picture In Picture mode.</p>
                 <div className="url-input-container">
-                    <label htmlFor="plex-url">Plex Client URL:</label>
+                    <label htmlFor="plex-url">Plex Web Client URL:</label>
                     <input
                         id="plex-url"
                         type="text"

@@ -3,7 +3,7 @@
 <p align="center">
  <img src="./Assets/POT.svg" alt="PlexOnTauri Logo" width="128" height="128">
    <br/>
-   Plex On Tauri
+   TauriPlex Client
    <br/>
    <a href="https://github.com/Snazzie/PlexOnTauri/releases/latest">
      <img src="https://img.shields.io/github/v/release/Snazzie/PlexOnTauri?style=flat-square&label=Latest%20Release" alt="Latest Release Version">
@@ -11,7 +11,7 @@
 </p>
 A lightweight, cross-platform Plex web client wrapper that provides an optimized experience for ARM-based devices (and works great on x86 too!).
 
-### Disclaimer: This application is not developed, endorsed, or affiliated with 'Plex Inc.'. Plex On Tauri is an unofficial wrapper/browser that can be provided with any link, but is intended for navigating to official Plex Web Client. It does not tamper with or change how Plex Web Client is intended to be used and its metrics collected, it merely fixes the short coming of poor experience on arm devices.
+### Disclaimer: This application is not developed, endorsed, or affiliated with 'Plex Inc.'. TauriPlex Client is an unofficial wrapper/browser that can be provided with any link, but is intended for navigating to official Plex Web Client. It does not tamper with or change how Plex Web Client is intended to be used and its metrics collected, it merely fixes the short coming of poor experience on arm devices.
 ---
 
 <p align="center">
@@ -30,7 +30,7 @@ A lightweight, cross-platform Plex web client wrapper that provides an optimized
 
 ## Usage
 
-1. Launch the Plex On Tauri application
+1. Launch the TauriPlex Client application
 2. Click "Continue to Plex" on the welcome screen
 3. Log in to your Plex account
 4. Ensure `Use alternate streaming protocol for video playback` is disabled. Settings > Plex Web > Debug > Use alternate streaming protocol for video playback

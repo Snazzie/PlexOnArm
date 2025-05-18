@@ -1,15 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g transform="matrix(1,0,0,1,-13.1331,0.729625)">
-        <rect x="-12.718" y="-10.061" width="303.522" height="279.809" style="fill:rgb(47,47,47);"/>
-    </g>
-    <g transform="matrix(0.910619,0,0,0.972339,10.6066,5.30489)">
-        <g transform="matrix(10.2863,0,0,33.0656,-928.585,-3864.65)">
-            <path d="M96.247,117.529L102.331,117.504L109.366,120.752L102.7,120.752L96.247,117.529ZM96.247,123.881L102.7,120.752L109.366,120.752L102.328,123.886L96.247,123.881Z" style="fill:rgb(255,193,48);fill-rule:nonzero;"/>
-        </g>
-        <g transform="matrix(10.2863,0,0,33.0656,-928.585,-3864.65)">
-            <path d="M101.883,120.752L108.548,120.752L101.883,120.752ZM96.247,123.881L102.7,120.752L109.366,120.752L102.328,123.881L96.247,123.881Z" style="fill:rgb(36,200,219);fill-rule:nonzero;"/>
-        </g>
-    </g>
-</svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg width="100%" height="100%" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><rect x="-25.851" y="-9.331" width="303.522" height="279.809" style="fill:#2f2f2f;"/><g><path d="M77.561,41.303l56.987,-0.825l65.891,104.436l-62.431,0l-60.447,-103.611Zm122.878,103.611l-62.431,0l62.431,0Z" style="fill:#ffc130;fill-rule:nonzero;"/><path d="M125.653,114.914l-62.431,0l62.431,0Zm52.786,100.608l-60.447,-100.608l-62.431,0l65.92,100.608l56.958,0Z" style="fill:#24c8db;fill-rule:nonzero;"/></g></svg>
