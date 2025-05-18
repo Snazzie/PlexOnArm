@@ -1,7 +1,7 @@
 
 
 <p align="center">
- <img src="./Assets/icon.svg" alt="MediaOnTauri Logo" width="128" height="128">
+ <img src="./Assets/icon.png" alt="MediaOnTauri Logo" width="128" height="128">
    <br/>
    MediaOnTauri
    <br/>
