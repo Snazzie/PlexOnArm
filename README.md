@@ -32,7 +32,7 @@ A lightweight, cross-platform Client that works with Plex Web Client to provide 
 1. Launch the application
 2. Click "Continue to Web Client" on the welcome screen
 3. Log in to your Plex account
-4. Ensure `Use alternate streaming protocol for video playback` is disabled. Settings > Plex Web > Debug > Use alternate streaming protocol for video playback
+4. If you're using plex, ensure `Use alternate streaming protocol for video playback` is disabled. Settings > Plex Web > Debug > Use alternate streaming protocol for video playback
 5. Enjoy your media!
 
 ## Installation
