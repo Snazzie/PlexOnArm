@@ -94,11 +94,23 @@ function App() {
             <div className="confirmation-container">
                 <h2>Welcome to Media On Tauri</h2>
                 {tauriVersion && <p>App Version: {tauriVersion}</p>}
+                <p>
+                    Repository:{" "}
+                    <a
+                        href="https://github.com/Snazzie/MediaOnTauri"
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="GitHub Repository"
+                    >
+                        https://github.com/Snazzie/MediaOnTauri
+                    </a>
+                </p>
                 <div className="zoom-level-display">
                     Zoom: {(zoomLevel * 100).toFixed(0)}%
                 </div>
                 <p>Use Ctrl + and Ctrl - to adjust zoom.</p>
                 <p>Use Alt + P to toggle Picture In Picture mode.</p>
+
                 <div className="url-input-container">
                     <label htmlFor="url">Web Client URL:</label>
                     <input

@@ -62,6 +62,23 @@ body {
   margin: 0 auto;
 }
 
+.confirmation-container a {
+  color: inherit;
+  /* Inherit color from parent */
+  text-decoration: none;
+  /* Remove underline */
+}
+
+.confirmation-container a:hover {
+  color: #007bff;
+  /* Add hover color */
+}
+
+.confirmation-container a:visited {
+  color: inherit;
+  /* Ensure visited links also inherit color */
+}
+
 .url-input-container {
   margin: 20px 0;
   width: 100%;
