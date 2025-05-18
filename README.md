@@ -9,7 +9,7 @@
      <img src="https://img.shields.io/github/v/release/Snazzie/PlexOnTauri?style=flat-square&label=Latest%20Release" alt="Latest Release Version">
    </a>
 </p>
-A lightweight, cross-platform Plex web client wrapper that provides an optimized for ARM-based devices (and works great on x86 too!).
+A lightweight, cross-platform Plex web client wrapper that provides an optimized experience for ARM-based devices (and works great on x86 too!).
 
 ---
 
