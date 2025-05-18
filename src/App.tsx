@@ -99,8 +99,8 @@ function App() {
                     <a
                         href="https://github.com/Snazzie/MediaOnTauri"
                         target="_blank"
-                        rel="noreferrer"
                         aria-label="GitHub Repository"
+                        rel="noreferrer"
                     >
                         https://github.com/Snazzie/MediaOnTauri
                     </a>
@@ -108,8 +108,14 @@ function App() {
                 <div className="zoom-level-display">
                     Zoom: {(zoomLevel * 100).toFixed(0)}%
                 </div>
-                <p>Use Ctrl + and Ctrl - to adjust zoom.</p>
-                <p>Use Alt + P to toggle Picture In Picture mode.</p>
+                <div className="controls">
+                    <p className="control-instruction">
+                        Use Ctrl + and Ctrl - to adjust zoom.
+                    </p>
+                    <p className="control-instruction">
+                        Use Alt + P to toggle Picture In Picture mode.
+                    </p>
+                </div>
 
                 <div className="url-input-container">
                     <label htmlFor="url">Web Client URL:</label>
