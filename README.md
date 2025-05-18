@@ -11,7 +11,7 @@
 </p>
 A lightweight, cross-platform Plex web client wrapper that provides an optimized experience for ARM-based devices (and works great on x86 too!).
 
-### Disclaimer: This application is not affiliated with Plex Inc. Plex On Tauri is a browser that can be provided with any link, but is intended to be used with Plex Web Client, it does not tamper with or change how Plex Web Client is intended to be used and its metrics collected.
+### Disclaimer: This application is not developed, endorsed, or affiliated with 'Plex Inc.'. Plex On Tauri is an unofficial wrapper/browser that can be provided with any link, but is intended for navigating to official Plex Web Client. It does not tamper with or change how Plex Web Client is intended to be used and its metrics collected, it merely fixes the short coming of poor experience on arm devices.
 ---
 
 <p align="center">
