@@ -5,7 +5,7 @@ import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 function App() {
     const [error, setError] = useState<string | null>(null);
-    const [plexUrl, setPlexUrl] = useState("https://app.plex.tv/desktop");
+    const [url, setUrl] = useState("https://app.plex.tv/desktop");
     const [zoomLevel, setZoomLevel] = useState(1.0);
 
     // Load saved URL from store and set up initial window state when component mounts
@@ -14,9 +14,9 @@ function App() {
             try {
                 // Load saved URL
                 const store = await load("settings.json");
-                const savedUrl = await store.get<string>("plexUrl");
+                const savedUrl = await store.get<string>("url");
                 if (savedUrl) {
-                    setPlexUrl(savedUrl);
+                    setUrl(savedUrl);
                 }
 
                 // Load saved zoom level
@@ -44,7 +44,7 @@ function App() {
     const saveUrl = async (url: string) => {
         try {
             const store = await load("settings.json");
-            await store.set("plexUrl", url);
+            await store.set("url", url);
             await store.save();
             console.debug("URL saved successfully:", url);
         } catch (err) {
@@ -52,20 +52,20 @@ function App() {
         }
     };
 
-    const loadPlex = async () => {
+    const loadUrl = async () => {
         try {
             // Save URL to settings
-            await saveUrl(plexUrl);
+            await saveUrl(url);
 
-            window.location.href = plexUrl;
+            window.location.href = url;
 
-            console.debug("Navigated to Plex in the current window");
+            console.debug("Navigated to Url in the current window");
 
             return () => {};
         } catch (err: unknown) {
-            console.error("Failed to initialize Plex:", err);
+            console.error("Failed to initialize Url:", err);
             setError(
-                `Failed to initialize Plex: ${err instanceof Error ? err.message : String(err)}`,
+                `Failed to initialize Url: ${err instanceof Error ? err.message : String(err)}`,
             );
         }
     };
@@ -73,7 +73,7 @@ function App() {
     if (error) {
         return (
             <div className="error-container">
-                <h2>Error Loading Plex</h2>
+                <h2>Error Loading Url</h2>
                 <p>{error}</p>
                 <button onClick={() => window.location.reload()} type="button">
                     Retry
@@ -85,7 +85,7 @@ function App() {
     return (
         <>
             <div className="confirmation-container">
-                <h2>Welcome to TauriPlex Client</h2>
+                <h2>Welcome to MediaOnTauri</h2>
                 <p>This application will load Plex in the current window.</p>
                 <div className="zoom-level-display">
                     Zoom: {(zoomLevel * 100).toFixed(0)}%
@@ -93,13 +93,13 @@ function App() {
                 <p>Use Ctrl + and Ctrl - to adjust zoom.</p>
                 <p>Use Alt + P to toggle Picture In Picture mode.</p>
                 <div className="url-input-container">
-                    <label htmlFor="plex-url">Plex Web Client URL:</label>
+                    <label htmlFor="url">Web Client URL:</label>
                     <input
-                        id="plex-url"
+                        id="url"
                         type="text"
-                        value={plexUrl}
-                        onChange={(e) => setPlexUrl(e.target.value)}
-                        placeholder="Enter Plex Client URL"
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        placeholder="Enter Web Client URL"
                     />
                 </div>
 
@@ -108,8 +108,8 @@ function App() {
                     Local Plex: http://192.168.1.100:32400/web <br />- Tailscale:
                     http://plexserver:32400/web
                 </p>
-                <button onClick={loadPlex} type="button">
-                    Continue to Plex
+                <button onClick={loadUrl} type="button">
+                    Continue to Web Client
                 </button>
             </div>
 

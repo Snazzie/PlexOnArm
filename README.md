@@ -1,37 +1,36 @@
 
 
 <p align="center">
- <img src="./Assets/POT.svg" alt="PlexOnTauri Logo" width="128" height="128">
+ <img src="./Assets/icon.svg" alt="MediaOnTauri Logo" width="128" height="128">
    <br/>
-   TauriPlex Client
+   MediaOnTauri
    <br/>
-   <a href="https://github.com/Snazzie/PlexOnTauri/releases/latest">
-     <img src="https://img.shields.io/github/v/release/Snazzie/PlexOnTauri?style=flat-square&label=Latest%20Release" alt="Latest Release Version">
+   <a href="https://github.com/Snazzie/MediaOnTauri/releases/latest">
+     <img src="https://img.shields.io/github/v/release/Snazzie/MediaOnTauri?style=flat-square&label=Latest%20Release" alt="Latest Release Version">
    </a>
 </p>
-A lightweight, cross-platform Plex web client wrapper that provides an optimized experience for ARM-based devices (and works great on x86 too!).
+A lightweight, cross-platform Client that works with Plex Web Client to provide an optimized experience for ARM-based devices (and works great on x86 too!).
 
-### Disclaimer: This application is not developed, endorsed, or affiliated with 'Plex Inc.'. TauriPlex Client is an unofficial wrapper/browser that can be provided with any link, but is intended for navigating to official Plex Web Client. It does not tamper with or change how Plex Web Client is intended to be used and its metrics collected, it merely fixes the short coming of poor experience on arm devices.
 ---
 
 <p align="center">
-   <img src="https://github.com/user-attachments/assets/c198c3a7-f69f-4786-87e8-7d19a98f6a90" alt="PlexOnTauri Logo">
+   <img src="https://github.com/user-attachments/assets/c198c3a7-f69f-4786-87e8-7d19a98f6a90" alt="MediaOnTauri Logo">
 </p>
 
 ## Features
 
-- **Native Desktop Experience**: Serves Plex Web Client in a native desktop application.
+- **Native Desktop Experience**: Serves Any Media Web Client in a native desktop application.
 - **Fixes Plex Windows Arm's annoying bugs**: No more skipping, black screen and stuttery UI!
 - **Optimized Performance**: Built with Tauri for minimal resource usage and fast startup times.
-- **Change Plex Url**: Change the Plex URL to any Plex server you want. i.e tailscale VPN or local network
+- **Change Url**: Change the URL to any web client server you want. i.e tailscale VPN or local network
 - **Picture in Picture Mode**: Toggle between normal and picture-in-picture mode with a simple keyboard shortcut (Alt + P).
 
 ![explorer_zNifHSnvI8](https://github.com/user-attachments/assets/5d544362-76cf-493c-a826-f240bd2dc3e7)
 
 ## Usage
 
-1. Launch the TauriPlex Client application
-2. Click "Continue to Plex" on the welcome screen
+1. Launch the application
+2. Click "Continue to Web Client" on the welcome screen
 3. Log in to your Plex account
 4. Ensure `Use alternate streaming protocol for video playback` is disabled. Settings > Plex Web > Debug > Use alternate streaming protocol for video playback
 5. Enjoy your media!
@@ -40,7 +39,7 @@ A lightweight, cross-platform Plex web client wrapper that provides an optimized
 
 ### Pre-built Binaries
 
-Download the latest release for your platform from the [Releases](https://github.com/Snazzie/PlexOnTauri/releases) page.
+Download the latest release for your platform from the [Releases](https://github.com/Snazzie/MediaOnTauri/releases) page.
 
 ### Building from Source
 
@@ -89,10 +88,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgments
 
 - [Tauri](https://tauri.app/) for providing the framework to build this application
-- [Plex](https://www.plex.tv/) for their amazing media server and player
-
----
-
-<p align="center">
-  Made with ❤️ for the Plex community
-</p>

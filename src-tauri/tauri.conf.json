@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "TauriPlex Client",
+  "productName": "MediaOnTauri",
   "version": "1.0.2",
   "identifier": "com.tauriplex.app",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "TauriPlex Client",
+        "title": "MediaOnTauri",
         "width": 1024,
         "height": 768,
         "visible": false,
