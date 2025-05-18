@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    plexMediaOnTauri_lib::run()
+    MediaOnTauri_lib::run()
 }
