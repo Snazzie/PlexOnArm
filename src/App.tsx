@@ -3,10 +3,13 @@ import { load } from "@tauri-apps/plugin-store";
 import "./App.css";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
+import { getVersion } from "@tauri-apps/api/app";
+
 function App() {
     const [error, setError] = useState<string | null>(null);
     const [url, setUrl] = useState("https://app.plex.tv/desktop");
     const [zoomLevel, setZoomLevel] = useState(1.0);
+    const [tauriVersion, setTauriVersion] = useState<string | null>(null);
 
     // Load saved URL from store and set up initial window state when component mounts
     useEffect(() => {
@@ -22,6 +25,10 @@ function App() {
                 // Load saved zoom level
                 const savedZoomLevel = await invoke<number>("get_saved_zoom_level");
                 setZoomLevel(savedZoomLevel);
+
+                // Get Tauri version
+                const version = await getVersion();
+                setTauriVersion(version);
             } catch (err) {
                 console.error("Failed during initialization:", err);
                 // Make window visible even if there was an error
@@ -86,6 +93,7 @@ function App() {
         <>
             <div className="confirmation-container">
                 <h2>Welcome to Media On Tauri</h2>
+                {tauriVersion && <p>App Version: {tauriVersion}</p>}
                 <div className="zoom-level-display">
                     Zoom: {(zoomLevel * 100).toFixed(0)}%
                 </div>
