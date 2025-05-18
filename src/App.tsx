@@ -85,8 +85,7 @@ function App() {
     return (
         <>
             <div className="confirmation-container">
-                <h2>Welcome to MediaOnTauri</h2>
-                <p>This application will load Plex in the current window.</p>
+                <h2>Welcome to Media On Tauri</h2>
                 <div className="zoom-level-display">
                     Zoom: {(zoomLevel * 100).toFixed(0)}%
                 </div>
