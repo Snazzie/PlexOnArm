@@ -14,7 +14,7 @@ A lightweight, cross-platform Client that works with Plex Web Client to provide 
 ---
 
 <p align="center">
-   <img src="https://github.com/user-attachments/assets/c198c3a7-f69f-4786-87e8-7d19a98f6a90" alt="MediaOnTauri Logo">
+   <img src="./Assets/Screenshots/app.jpg" alt="MediaOnTauri app screenshot">
 </p>
 
 ## Features
