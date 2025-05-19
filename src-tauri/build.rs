@@ -38,6 +38,7 @@ fn import_js_scripts_to_rust() -> PathBuf {
         ("PIP_SCRIPT", "pip_script.js"),
         ("PIP_OVERLAY_SCRIPT", "pip_overlay_script.js"),
         ("ZOOM_SCRIPT", "zoom_script.js"),
+        ("BRIGHTNESS_SCRIPT", "brightness_script.js"),
     ];
 
     // Generate Rust code for each script
