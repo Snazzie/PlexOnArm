@@ -24,7 +24,7 @@ A lightweight Web Client wrapper that works great with Plex Web Client on arm64 
 - **Optimized Performance**: Built with Tauri for minimal resource usage and fast startup times.
 - **Change Url**: Change the URL to any web client server you want. i.e tailscale VPN or local network
 - **Control Video Brightness** Change video brightness with `alt + [`and `alt + ]`.
-- **Picture in Picture Mode**: Toggle between normal and picture-in-picture mode with a simple keyboard shortcut `Alt + P`.
+- **Picture in Picture Mode**: Toggle between normal and picture-in-picture mode with a simple keyboard shortcut `alt + P`.
 
 ![explorer_zNifHSnvI8](./Assets/Screenshots/pip.jpg)
 
