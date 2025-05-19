@@ -3,7 +3,7 @@
 <p align="center">
  <img src="./Assets/icon.png" alt="MediaOnTauri Logo" width="128" height="128">
    <br/>
-   MediaOnTauri
+   Media On Tauri
    <br/>
    <a href="https://github.com/Snazzie/MediaOnTauri/releases/latest">
      <img src="https://img.shields.io/github/v/release/Snazzie/MediaOnTauri?style=flat-square&label=Latest%20Release" alt="Latest Release Version">
