@@ -9,7 +9,7 @@
      <img src="https://img.shields.io/github/v/release/Snazzie/MediaOnTauri?style=flat-square&label=Latest%20Release" alt="Latest Release Version">
    </a>
 </p>
-A lightweight Web Client wrapper that works great with Plex Web Client on arm64 devices (and works great on x86 too!).
+A lightweight Web Client wrapper with some extra features.
 
 ---
 
