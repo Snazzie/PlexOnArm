@@ -25,7 +25,7 @@ A lightweight Web Client wrapper that works well with Plex Web Client on arm64 d
 - **Change Url**: Change the URL to any web client server you want. i.e tailscale VPN or local network
 - **Picture in Picture Mode**: Toggle between normal and picture-in-picture mode with a simple keyboard shortcut (Alt + P).
 
-![explorer_zNifHSnvI8](https://github.com/user-attachments/assets/5d544362-76cf-493c-a826-f240bd2dc3e7)
+![explorer_zNifHSnvI8](./Assets/Screenshots/pip.jpg)
 
 ## Usage
 
