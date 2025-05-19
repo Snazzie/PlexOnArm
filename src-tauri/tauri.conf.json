@@ -16,7 +16,8 @@
         "width": 1024,
         "height": 768,
         "visible": false,
-        "maximized": false
+        "maximized": false,
+        "devtools": true
       }
     ]
   },

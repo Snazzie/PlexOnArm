@@ -115,6 +115,9 @@ function App() {
                     <p className="control-instruction">
                         Use Alt + P to toggle Picture In Picture mode.
                     </p>
+                    <p className="control-instruction">
+                        Use Ctrl + [ and Ctrl + ] to adjust video brightness.
+                    </p>
                 </div>
 
                 <div className="url-input-container">
