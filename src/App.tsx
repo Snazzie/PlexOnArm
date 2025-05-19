@@ -113,10 +113,10 @@ function App() {
                         Use Ctrl + and Ctrl - to adjust zoom.
                     </p>
                     <p className="control-instruction">
-                        Use Alt + P to toggle Picture In Picture mode.
+                        Use Alt + [ and Alt + ] to adjust video brightness.
                     </p>
                     <p className="control-instruction">
-                        Use Ctrl + [ and Ctrl + ] to adjust video brightness.
+                        Use Alt + P to toggle Picture In Picture mode.
                     </p>
                 </div>
 

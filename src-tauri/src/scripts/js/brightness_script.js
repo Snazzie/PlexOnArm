@@ -50,11 +50,11 @@ document.addEventListener('keydown', (event) => {
 
     let newBrightness = currentBrightness;
 
-    if (event.ctrlKey && event.key === '[') {
+    if (event.altKey && event.key === '[') {
         // Decrease brightness
         newBrightness = Math.max(0.1, currentBrightness - 0.1);
         event.preventDefault(); // Prevent default browser action
-    } else if (event.ctrlKey && event.key === ']') {
+    } else if (event.altKey && event.key === ']') {
         // Increase brightness
         newBrightness = currentBrightness + 0.1;
         event.preventDefault(); // Prevent default browser action
