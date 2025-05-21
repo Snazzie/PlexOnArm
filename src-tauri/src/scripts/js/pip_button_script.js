@@ -28,10 +28,10 @@ function injectPipButton() {
         pipButton.style.borderRadius = '5px';
 
         // Add event listener to trigger PiP (will need to implement the actual PiP logic)
-        pipButton.addEventListener('click', () => {
+        pipButton.addEventListener('click', async () => {
             console.log('Picture-in-Picture button clicked');
-            // TODO: Implement the logic to enter Picture-in-Picture mode
-            // This will likely involve calling a Tauri command or using the browser's PiP API
+            // Emit the 'toggle_pip' event to Tauri
+            window.__TAURI_INTERNALS__.invoke('toggle_pip');
         });
 
         // Inject the button into the top controls overlay
