@@ -69,6 +69,17 @@ function injectPipButton() {
             userSelect: 'none' // Match overlay buttons
         });
 
+        // Add hover effect
+        pipButton.addEventListener("mouseover", () => {
+            pipButton.style.backgroundColor = "rgba(255, 255, 255, 0.2)"; // Lighten background on hover
+            pipButton.style.border = "1px solid rgba(255, 255, 255, 0.5)"; // Add a subtle border
+        });
+
+        pipButton.addEventListener("mouseout", () => {
+            pipButton.style.backgroundColor = "rgba(0, 0, 0, 0.7)"; // Revert background
+            pipButton.style.border = "none"; // Remove border
+        });
+
         // Add event listener to trigger PiP (will need to implement the actual PiP logic)
         pipButton.addEventListener("click", () => {
             const ev = new Event("toggle-pip")
