@@ -97,6 +97,8 @@ pub fn toggle_pip<R: Runtime>(
         } else {
             println!("Window was not maximized before, not restoring maximized state");
         }
+
+        let _ = window.set_title("Media On Tauri");
     } else {
         // Save current window state before entering PIP mode
         let mut current_state = WindowState::default();
@@ -166,6 +168,7 @@ pub fn toggle_pip<R: Runtime>(
         window
             .set_focus()
             .map_err(|e| format!("Failed to focus window: {}", e))?;
+        let _ = window.set_title("Media On Tauri PIP MODE");
     }
 
     let new_pip_state = !is_pip;
