@@ -27,7 +27,7 @@ function onEvent() {
     const state = localStorage.getItem('pipState');
     // Read current PiP state from local storage, default to 'true' if not set
     const currentPipState = state === null ? "false" : state;
-    const isPipEnabled = currentPipState;
+    const isPipEnabled = currentPipState === "true";
 
     // Toggle the state
     const newPipState = !isPipEnabled;
