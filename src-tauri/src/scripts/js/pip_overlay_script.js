@@ -285,28 +285,26 @@ function removeDraggableOverlay() {
 }
 
 // Listen for Alt+P keyboard shortcut to toggle PiP mode
-document.addEventListener('keydown', (event) => {
+document.addEventListener('toggle-pip', (event) => {
   // Check if Alt key is pressed and P key is pressed
-  if (event.altKey && event.key === 'p') {
-    // Check if we're on the initial screen by looking for the confirmation container
-    const isOnInitialScreen = document.querySelector('.confirmation-container') !== null;
+  // Check if we're on the initial screen by looking for the confirmation container
+  const isOnInitialScreen = document.querySelector('.confirmation-container') !== null;
 
-    // Only proceed if we're NOT on the initial screen
-    if (isOnInitialScreen) {
-      console.debug('Ignoring Alt+P on initial screen in overlay script');
-      return;
-    }
+  // Only proceed if we're NOT on the initial screen
+  if (isOnInitialScreen) {
+    console.debug('Ignoring Alt+P on initial screen in overlay script');
+    return;
+  }
 
-    // Toggle PiP mode state
-    isPipMode = !isPipMode;
-    console.debug('PiP mode toggled via Alt+P to:', isPipMode);
+  // Toggle PiP mode state
+  isPipMode = !isPipMode;
+  console.debug('PiP mode toggled via Alt+P to:', isPipMode);
 
-    // Toggle the draggable overlay
-    if (isPipMode) {
-      createDraggableOverlay();
-    } else {
-      removeDraggableOverlay();
-    }
+  // Toggle the draggable overlay
+  if (isPipMode) {
+    createDraggableOverlay();
+  } else {
+    removeDraggableOverlay();
   }
 });
 
