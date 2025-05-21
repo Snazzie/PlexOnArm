@@ -24,31 +24,21 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("pipChanged", (event) => {
-    // Check if the top controls element exists before trying to find the button
-    const topControls = document.querySelector(
-        '[class^="AudioVideoFullPlayer-topBar"]',
-    );
-    if (topControls) {
-        const pipButton = document.getElementById("pip-button");
-        if (pipButton) {
-            console.log("pipButton", "found");
-            const pipState = event.detail.value;
-            console.warn(pipState)
-            console.log("pip-state", pipState)
-            pipButton.style.display = pipState === "true" ? "" : "none";
-        } else {
-            console.error("pipButton", "notfound");
-        }
+
+    const pipButton = document.getElementById("pip-button");
+    if (pipButton) {
+        console.log("pipButton", "found");
+        const pipState = event.detail.value;
+        console.warn(pipState)
+        console.log("pip-state", pipState)
+        pipButton.style.display = pipState === "true" ? "" : "none";
     } else {
-        console.error("Top controls element not found on storage change.");
+        console.error("pipButton", "notfound");
     }
 });
 
 // This script injects a Picture-in-Picture button into the video player controls.
 function injectPipButton() {
-    // Read current PiP state from local storage, default to 'true' if not set
-    const currentPipState = localStorage.getItem("pipState");
-
     // Find the top controls overlay element
     const topControls = document.querySelector('[class^="AudioVideoFullPlayer-topBar"]');
 

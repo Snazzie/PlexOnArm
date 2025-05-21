@@ -1,7 +1,3 @@
-document.addEventListener("DOMContentLoaded", () => {
-
-    localStorage.setItem("pipState", "false");
-});
 
 document.addEventListener('keydown', (event) => {
     // Check if Alt key is pressed and P key is pressed
@@ -28,9 +24,9 @@ function onEvent() {
         console.debug('Ignoring toggle on initial screen');
         return;
     }
-
+    const state = localStorage.getItem('pipState');
     // Read current PiP state from local storage, default to 'true' if not set
-    const currentPipState = localStorage.getItem('pipState');
+    const currentPipState = state === null ? "false" : state;
     const isPipEnabled = currentPipState;
 
     // Toggle the state
