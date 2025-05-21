@@ -137,22 +137,8 @@ function createDraggableOverlay() {
     e.stopPropagation(); // Prevent triggering drag
     console.debug('Exit PIP button clicked');
 
-    // Toggle PIP mode off
-    isPipMode = false;
-
-    // Invoke the toggle_pip command to exit PIP mode
-    try {
-      if (window.__TAURI_INTERNALS__?.invoke) {
-        const windowLabel = window.__TAURI_INTERNALS__?.metadata?.currentWindow?.label || 'main';
-        window.__TAURI_INTERNALS__.invoke('toggle_pip', {
-          windowLabel: windowLabel
-        });
-        console.debug('Invoked toggle_pip to exit PIP mode');
-      }
-    } catch (err) {
-      console.error('Error exiting PIP mode:', err);
-    }
-
+    const ev = new Event("toggle-pip")
+    document.dispatchEvent(ev);
     // Remove the overlay
     removeDraggableOverlay();
   });
@@ -285,28 +271,25 @@ function removeDraggableOverlay() {
 }
 
 // Listen for Alt+P keyboard shortcut to toggle PiP mode
-document.addEventListener('keydown', (event) => {
+document.addEventListener('toggle-pip', (event) => {
   // Check if Alt key is pressed and P key is pressed
-  if (event.altKey && event.key === 'p') {
-    // Check if we're on the initial screen by looking for the confirmation container
-    const isOnInitialScreen = document.querySelector('.confirmation-container') !== null;
+  // Check if we're on the initial screen by looking for the confirmation container
+  const isOnInitialScreen = document.querySelector('.confirmation-container') !== null;
 
-    // Only proceed if we're NOT on the initial screen
-    if (isOnInitialScreen) {
-      console.debug('Ignoring Alt+P on initial screen in overlay script');
-      return;
-    }
+  // Only proceed if we're NOT on the initial screen
+  if (isOnInitialScreen) {
+    console.debug('Ignoring Alt+P on initial screen in overlay script');
+    return;
+  }
 
-    // Toggle PiP mode state
-    isPipMode = !isPipMode;
-    console.debug('PiP mode toggled via Alt+P to:', isPipMode);
+  // Toggle PiP mode state
+  isPipMode = !isPipMode;
 
-    // Toggle the draggable overlay
-    if (isPipMode) {
-      createDraggableOverlay();
-    } else {
-      removeDraggableOverlay();
-    }
+  // Toggle the draggable overlay
+  if (isPipMode) {
+    createDraggableOverlay();
+  } else {
+    removeDraggableOverlay();
   }
 });
 
