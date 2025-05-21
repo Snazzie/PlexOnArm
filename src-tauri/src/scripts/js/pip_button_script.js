@@ -31,7 +31,7 @@ document.addEventListener("pipChanged", (event) => {
         const pipState = event.detail.value;
         console.warn(pipState)
         console.log("pip-state", pipState)
-        pipButton.style.display = pipState === "true" ? "none" : "unset";
+        pipButton.style.display = pipState === true ? "none" : "unset";
     } else {
         console.error("pipButton", "notfound");
     }
