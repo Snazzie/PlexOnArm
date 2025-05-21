@@ -1,5 +1,4 @@
 // This script injects a Picture-in-Picture button into the video player controls.
-
 function injectPipButton() {
     // Read current PiP state from local storage, default to 'true' if not set
     const currentPipState = localStorage.getItem('pipState');
@@ -28,10 +27,14 @@ function injectPipButton() {
         pipButton.style.borderRadius = '5px';
 
         // Add event listener to trigger PiP (will need to implement the actual PiP logic)
-        pipButton.addEventListener('click', async () => {
+        pipButton.addEventListener('click', () => {
             console.log('Picture-in-Picture button clicked');
-            // Emit the 'toggle_pip' event to Tauri
-            window.__TAURI_INTERNALS__.invoke('toggle_pip');
+            // Simulate Alt+P key press
+            const event = new KeyboardEvent('keydown', {
+                key: 'p',
+                altKey: true
+            });
+            document.dispatchEvent(event);
         });
 
         // Inject the button into the top controls overlay
@@ -45,7 +48,7 @@ function injectPipButton() {
     // Hide the button if PiP is disabled
     const pipButton = document.getElementById('pip-button');
     if (pipButton) {
-        pipButton.style.display = isPipEnabled ? '' : 'none';
+        pipButton.style.display = localStorage.getItem('pipState') === "true" ? '' : 'none';
         console.debug('PiP button display state set based on local storage:', isPipEnabled);
     }
 }

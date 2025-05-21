@@ -44,6 +44,7 @@ document.addEventListener('keydown', (event) => {
                 window.__TAURI_INTERNALS__.invoke('toggle_pip', {
                     windowLabel: windowLabel
                 });
+                localStorage.setItem('pipState', "true");
                 console.debug('Invoked toggle_pip for window:', windowLabel);
             } else {
                 console.error('__TAURI_INTERNALS__ is not available');
