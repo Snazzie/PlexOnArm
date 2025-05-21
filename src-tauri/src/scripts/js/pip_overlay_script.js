@@ -137,22 +137,8 @@ function createDraggableOverlay() {
     e.stopPropagation(); // Prevent triggering drag
     console.debug('Exit PIP button clicked');
 
-    // Toggle PIP mode off
-    isPipMode = false;
-
-    // Invoke the toggle_pip command to exit PIP mode
-    try {
-      if (window.__TAURI_INTERNALS__?.invoke) {
-        const windowLabel = window.__TAURI_INTERNALS__?.metadata?.currentWindow?.label || 'main';
-        window.__TAURI_INTERNALS__.invoke('toggle_pip', {
-          windowLabel: windowLabel
-        });
-        console.debug('Invoked toggle_pip to exit PIP mode');
-      }
-    } catch (err) {
-      console.error('Error exiting PIP mode:', err);
-    }
-
+    const ev = new Event("toggle-pip")
+    document.dispatchEvent(ev);
     // Remove the overlay
     removeDraggableOverlay();
   });

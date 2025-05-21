@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-window.addEventListener("toggle-pip", () => {
+document.addEventListener("pipChanged", (event) => {
     // Check if the top controls element exists before trying to find the button
     const topControls = document.querySelector(
         '[class^="AudioVideoFullPlayer-topBar"]',
@@ -32,10 +32,12 @@ window.addEventListener("toggle-pip", () => {
         const pipButton = document.getElementById("pip-button");
         if (pipButton) {
             console.log("pipButton", "found");
-            pipButton.style.display =
-                localStorage.getItem("pipState") === "true" ? "" : "none";
+            const pipState = event.detail.value;
+            console.warn(pipState)
+            console.log("pip-state", pipState)
+            pipButton.style.display = pipState === "true" ? "" : "none";
         } else {
-            console.warn("pipButton", "notfound");
+            console.error("pipButton", "notfound");
         }
     } else {
         console.error("Top controls element not found on storage change.");
@@ -46,7 +48,6 @@ window.addEventListener("toggle-pip", () => {
 function injectPipButton() {
     // Read current PiP state from local storage, default to 'true' if not set
     const currentPipState = localStorage.getItem("pipState");
-    const isPipEnabled = currentPipState === null ? true : currentPipState === "true";
 
     // Find the top controls overlay element
     const topControls = document.querySelector('[class^="AudioVideoFullPlayer-topBar"]');
@@ -85,15 +86,5 @@ function injectPipButton() {
         console.log("Top controls element not found yet.");
     }
 
-    // Hide the button if PiP is disabled
-    const pipButton = document.getElementById("pip-button");
-    if (pipButton) {
-        pipButton.style.display =
-            localStorage.getItem("pipState") === "true" ? "" : "none";
-        console.debug(
-            "PiP button display state set based on local storage:",
-            localStorage.getItem("pipState") === "true",
-        );
-    }
 }
 

@@ -1,4 +1,8 @@
-// Add keyboard shortcut listener for Alt+P (toggle PiP)
+document.addEventListener("DOMContentLoaded", () => {
+
+    localStorage.setItem("pipState", "false");
+});
+
 document.addEventListener('keydown', (event) => {
     // Check if Alt key is pressed and P key is pressed
     if (event.altKey && event.key === 'p') {
@@ -11,13 +15,11 @@ document.addEventListener('keydown', (event) => {
 });
 document.addEventListener("toggle-pip", () => {
 
-    console.error("toggle-pip recieved")
     onEvent();
 })
 
 
 function onEvent() {
-
     // Check if we're on the initial screen by looking for the confirmation container
     const isOnInitialScreen = document.querySelector('.confirmation-container') !== null;
 
@@ -29,18 +31,26 @@ function onEvent() {
 
     // Read current PiP state from local storage, default to 'true' if not set
     const currentPipState = localStorage.getItem('pipState');
-    const isPipEnabled = currentPipState === null ? true : currentPipState === 'true';
+    const isPipEnabled = currentPipState;
 
     // Toggle the state
     const newPipState = !isPipEnabled;
     // Save the new state to local storage
-    localStorage.setItem('pipState', newPipState.toString());
-    console.debug('PiP state toggled and saved to local storage:', newPipState);
-    tryInvoke()
+    localStorage.setItem("pipState", newPipState.toString());
+    console.log('PiP state toggled and saved to local storage:', newPipState);
+    tryInvoke(newPipState)
+
+    const pipChange = new CustomEvent("pipChanged", {
+        detail: {
+            value: newPipState,
+        },
+    });
+    document.dispatchEvent(pipChange);
+
 }
 
 
-function tryInvoke() {
+function tryInvoke(value) {
     try {
         if (window.__TAURI_INTERNALS__) {
             // Safely get the current window label
@@ -60,7 +70,7 @@ function tryInvoke() {
             window.__TAURI_INTERNALS__.invoke('toggle_pip', {
                 windowLabel: windowLabel
             });
-            localStorage.setItem('pipState', "true");
+
             console.debug('Invoked toggle_pip for window:', windowLabel);
         } else {
             console.error('__TAURI_INTERNALS__ is not available');
