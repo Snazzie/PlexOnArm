@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("pipChanged", (event) => {
 
-    const pipButton = document.getElementById("pip-button");
+    const pipButton = document.getElementById("enter-pip-button");
     if (pipButton) {
         console.log("pipButton", "found");
         const pipState = event.detail.value;
@@ -42,25 +42,32 @@ function injectPipButton() {
     // Find the top controls overlay element
     const topControls = document.querySelector('[class^="AudioVideoFullPlayer-topBar"]');
 
-    if (topControls && !document.getElementById("pip-button")) {
+    if (topControls && !document.getElementById("enter-pip-button")) {
         // Check if button already exists
         // Create the Picture-in-Picture button
         const pipButton = document.createElement("button");
-        pipButton.textContent = "enter picture in picture mode";
-        pipButton.id = "pip-button"; // Add an ID for easier styling/referencing
+        pipButton.textContent = "Enter Picture In Picture";
+        pipButton.id = "enter-pip-button"; // Add an ID for easier styling/referencing
 
         // Basic styling to position the button (can be improved with CSS)
-        pipButton.style.position = "absolute";
-        pipButton.style.top = "50%";
-        pipButton.style.left = "50%";
-        pipButton.style.transform = "translate(-50%, -50%)";
-        pipButton.style.zIndex = "10"; // Ensure it's above other controls
-        pipButton.style.padding = "10px";
-        pipButton.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-        pipButton.style.color = "white";
-        pipButton.style.border = "none";
-        pipButton.style.cursor = "pointer";
-        pipButton.style.borderRadius = "5px";
+        Object.assign(pipButton.style, {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            zIndex: "10", // Ensure it's above other controls
+            padding: "20px", // Updated padding
+            backgroundColor: "rgba(0, 0, 0, 0.7)", // Match overlay buttons
+            color: "white",
+            border: "none",
+            cursor: "pointer",
+            borderRadius: "4px", // Match overlay buttons
+            transition: 'opacity 0.3s ease-in-out, background-color 0.2s ease-in-out', // Match overlay buttons
+            fontSize: '12px', // Match overlay buttons
+            fontFamily: 'Arial, sans-serif', // Match overlay buttons
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)', // Match overlay buttons
+            userSelect: 'none' // Match overlay buttons
+        });
 
         // Add event listener to trigger PiP (will need to implement the actual PiP logic)
         pipButton.addEventListener("click", () => {
