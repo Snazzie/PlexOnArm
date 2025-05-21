@@ -14,6 +14,17 @@ document.addEventListener('keydown', (event) => {
             return;
         }
 
+        // Read current PiP state from local storage, default to 'true' if not set
+        const currentPipState = localStorage.getItem('pipState');
+        const isPipEnabled = currentPipState === null ? true : currentPipState === 'true';
+
+        // Toggle the state
+        const newPipState = !isPipEnabled;
+
+        // Save the new state to local storage
+        localStorage.setItem('pipState', newPipState.toString());
+        console.debug('PiP state toggled and saved to local storage:', newPipState);
+
         try {
             if (window.__TAURI_INTERNALS__) {
                 // Safely get the current window label

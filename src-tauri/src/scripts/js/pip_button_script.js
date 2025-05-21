@@ -1,6 +1,10 @@
 // This script injects a Picture-in-Picture button into the video player controls.
 
 function injectPipButton() {
+    // Read current PiP state from local storage, default to 'true' if not set
+    const currentPipState = localStorage.getItem('pipState');
+    const isPipEnabled = currentPipState === null ? true : currentPipState === 'true';
+
     // Find the top controls overlay element
     const topControls = document.querySelector('[class^="AudioVideoFullPlayer-topBar"]');
 
@@ -36,6 +40,13 @@ function injectPipButton() {
         console.log('Picture-in-Picture button injected.');
     } else if (!topControls) {
         console.log('Top controls element not found yet.');
+    }
+
+    // Hide the button if PiP is disabled
+    const pipButton = document.getElementById('pip-button');
+    if (pipButton) {
+        pipButton.style.display = isPipEnabled ? '' : 'none';
+        console.debug('PiP button display state set based on local storage:', isPipEnabled);
     }
 }
 
