@@ -23,8 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-window.addEventListener("storage", () => {
-    console.log("storage changed");
+window.addEventListener("toggle-pip", () => {
     // Check if the top controls element exists before trying to find the button
     const topControls = document.querySelector(
         '[class^="AudioVideoFullPlayer-topBar"]',

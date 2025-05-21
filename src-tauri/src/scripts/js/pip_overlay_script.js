@@ -298,7 +298,6 @@ document.addEventListener('toggle-pip', (event) => {
 
   // Toggle PiP mode state
   isPipMode = !isPipMode;
-  console.debug('PiP mode toggled via Alt+P to:', isPipMode);
 
   // Toggle the draggable overlay
   if (isPipMode) {
