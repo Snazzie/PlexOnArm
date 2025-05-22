@@ -25,6 +25,7 @@ A lightweight Web Client wrapper with some extra features.
 - **Change Url**: Change the URL to any web client server you want. i.e tailscale VPN or local network
 - **Control Video Brightness** Change video brightness with `alt + [`and `alt + ]`.
 - **Picture in Picture Mode**: Toggle between normal and picture-in-picture mode with a simple keyboard shortcut `alt + P`.
+- **RTX VSR**: Works with NVIDIA RTX Super Resolution, making your media extra crisp.
 
 ![explorer_zNifHSnvI8](./Assets/Screenshots/pip.jpg)
 
