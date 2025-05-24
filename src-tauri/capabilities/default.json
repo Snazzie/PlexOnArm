@@ -5,6 +5,9 @@
   "windows": [
     "main"
   ],
+  "platforms": [
+    "windows"
+  ],
   "permissions": [
     "core:default",
     "opener:default",
@@ -23,6 +26,7 @@
     "core:tray:default",
     "core:window:allow-set-title",
     "store:default",
-    "window-state:default"
+    "window-state:default",
+    "updater:default"
   ]
 }
