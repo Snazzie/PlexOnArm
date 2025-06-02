@@ -5,6 +5,33 @@ let isPipMode = false;
 let exitButton = null;
 let dragButton = null;
 
+
+// Also try to inject on DOMContentLoaded in case the element is present early
+document.addEventListener("DOMContentLoaded", () => {
+  injectPipButton(); // Keep the initial injection attempt
+
+  // Use a MutationObserver to watch for the top controls element
+  const observer = new MutationObserver((mutationsList, observer) => {
+    for (const mutation of mutationsList) {
+      if (mutation.type === "childList") {
+        // Check if the top controls element is now in the DOM
+        const topControls = document.querySelector(
+          '[class^="AudioVideoFullPlayer-topBar"]',
+        );
+        if (topControls) {
+          injectPipButton();
+        }
+      }
+    }
+  });
+
+  // Start observing the body for changes in its children
+  observer.observe(document.body, { childList: true, subtree: true });
+
+
+});
+
+
 function createDraggableOverlay() {
   if (overlay) {
     return; // Overlay already exists
@@ -292,44 +319,3 @@ document.addEventListener('toggle-pip', (event) => {
     removeDraggableOverlay();
   }
 });
-
-// Check PiP state on load
-try {
-  if (window.__TAURI_INTERNALS__?.invoke) {
-    // First check if we're on the initial screen
-    const isOnInitialScreen = document.querySelector('.confirmation-container') !== null;
-
-    // If we're on the initial screen, make sure PiP is disabled
-    if (isOnInitialScreen) {
-      console.debug('On initial screen, ensuring PiP is disabled');
-      if (isPipMode) {
-        isPipMode = false;
-        removeDraggableOverlay();
-
-        // Reset the PiP state in the backend
-        window.__TAURI_INTERNALS__.invoke('toggle_pip', {
-          windowLabel: window.__TAURI_INTERNALS__?.metadata?.currentWindow?.label || 'main'
-        }).catch(err => {
-          console.warn('Failed to reset PiP state on initial screen:', err);
-        });
-      }
-    } else {
-      // Only check and restore PiP state if we're not on the initial screen
-      window.__TAURI_INTERNALS__.invoke('is_pip_active')
-        .then(state => {
-          if (state) {
-            console.debug('PiP mode is active on script load');
-            isPipMode = true;
-            createDraggableOverlay();
-          }
-        })
-        .catch(err => {
-          console.warn('Failed to check PiP state on load:', err);
-        });
-    }
-  } else {
-    console.warn('Tauri API not available to check PiP state');
-  }
-} catch (e) {
-  console.warn('Error checking initial PiP state:', e);
-}
