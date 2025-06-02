@@ -1,4 +1,4 @@
-let overlay = null;
+const overlay = null;
 let isPipMode = false;
 
 // References to UI elements
@@ -37,23 +37,20 @@ function createDraggableOverlay() {
     return; // Overlay already exists
   }
 
-  // Create a container for our PIP controls (not for dragging)
-  overlay = document.createElement('div');
-  overlay.id = 'pip-controls-container';
-  overlay.style.position = 'fixed';
-  overlay.style.top = '0';
-  overlay.style.left = '0';
-  overlay.style.width = '0';
-  overlay.style.height = '0';
-  overlay.style.zIndex = '9999';
-  overlay.style.pointerEvents = 'none'; // Container is click-through
+  // Get the top controls element
+  const topControls = document.querySelector('[class^="AudioVideoFullPlayer-topBar"]');
+  if (!topControls) {
+    console.error('Top controls element not found');
+    return;
+  }
 
   // Create exit button (initially hidden)
   exitButton = document.createElement('div');
   exitButton.id = 'pip-exit-button';
-  exitButton.style.position = 'fixed'; // Use fixed instead of absolute
-  exitButton.style.top = '10px';
+  exitButton.style.position = 'absolute';
+  exitButton.style.top = '50%';
   exitButton.style.left = '10px';
+  exitButton.style.transform = 'translateY(-50%)';
   exitButton.style.padding = '5px 10px';
   exitButton.style.borderRadius = '4px';
   exitButton.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
@@ -62,8 +59,8 @@ function createDraggableOverlay() {
   exitButton.style.alignItems = 'center';
   exitButton.style.cursor = 'pointer';
   exitButton.style.zIndex = '10001'; // Higher than the overlay
-  exitButton.style.opacity = '0'; // Start hidden
-  exitButton.style.transition = 'opacity 0.3s ease-in-out, background-color 0.2s ease-in-out';
+  exitButton.style.opacity = '1';
+  exitButton.style.transition = 'background-color 0.2s ease-in-out';
   exitButton.style.pointerEvents = 'auto'; // Always clickable
   exitButton.style.fontSize = '12px';
   exitButton.style.fontFamily = 'Arial, sans-serif';
@@ -91,10 +88,10 @@ function createDraggableOverlay() {
   // Create drag button in the top middle
   dragButton = document.createElement('div');
   dragButton.id = 'pip-drag-button';
-  dragButton.style.position = 'fixed';
-  dragButton.style.top = '10px';
+  dragButton.style.position = 'absolute';
+  dragButton.style.top = '50%';
   dragButton.style.left = '50%';
-  dragButton.style.transform = 'translateX(-50%)'; // Center horizontally
+  dragButton.style.transform = 'translate(-50%, -50%)'; // Center both axes
   dragButton.style.padding = '5px 10px';
   dragButton.style.borderRadius = '4px';
   dragButton.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
@@ -103,8 +100,8 @@ function createDraggableOverlay() {
   dragButton.style.alignItems = 'center';
   dragButton.style.cursor = 'grab'; // Indicate it's draggable
   dragButton.style.zIndex = '10001';
-  dragButton.style.opacity = '0'; // Start hidden
-  dragButton.style.transition = 'opacity 0.3s ease-in-out, background-color 0.2s ease-in-out';
+  dragButton.style.opacity = '1';
+  dragButton.style.transition = 'background-color 0.2s ease-in-out';
   dragButton.style.pointerEvents = 'auto'; // Always clickable
   dragButton.style.fontSize = '12px';
   dragButton.style.fontFamily = 'Arial, sans-serif';
@@ -170,69 +167,11 @@ function createDraggableOverlay() {
     removeDraggableOverlay();
   });
 
-  // Set up hover detection to show/hide buttons
-  mouseMoveForHoverHandler = (e) => {
-    if (!isPipMode || !exitButton || !dragButton) return;
+  // Controls are now always visible in PIP mode
 
-    // Get window dimensions
-    const windowHeight = window.innerHeight;
-    const windowWidth = window.innerWidth;
-
-    // Calculate the top 20% area
-    const topAreaHeight = windowHeight * 0.2;
-
-    // Check if mouse is within the window bounds
-    const isInWindow =
-      e.clientX >= 0 &&
-      e.clientX <= windowWidth &&
-      e.clientY >= 0 &&
-      e.clientY <= windowHeight;
-
-    // Check if mouse is within the top 20% area
-    const isInTopArea =
-      e.clientX >= 0 &&
-      e.clientX <= windowWidth &&
-      e.clientY >= 0 &&
-      e.clientY <= topAreaHeight;
-
-    // Show controls if mouse is in top area
-    if (isInTopArea) {
-      // Mouse is over the top area
-      exitButton.style.opacity = '1';
-      dragButton.style.opacity = '1';
-    } else {
-      // Mouse is outside the top area
-      exitButton.style.opacity = '0';
-      dragButton.style.opacity = '0';
-    }
-  };
-
-  // Add hover detection event listener
-  document.addEventListener('mousemove', mouseMoveForHoverHandler);
-
-  // Add mouseout event listener to hide controls when mouse leaves the window
-  mouseOutHandler = (e) => {
-    // Check if the mouse has left the document/window
-    if (e.relatedTarget === null || e.relatedTarget.nodeName === 'HTML') {
-      exitButton.style.opacity = '0';
-      dragButton.style.opacity = '0';
-      console.debug('Mouse left window, hiding PIP controls');
-    }
-  };
-  document.addEventListener('mouseout', mouseOutHandler);
-
-  // Add mouseleave event listener to the window
-  mouseLeaveHandler = () => {
-    exitButton.style.opacity = '0';
-    dragButton.style.opacity = '0';
-    console.debug('Mouse left window (mouseleave), hiding PIP controls');
-  };
-  window.addEventListener('mouseleave', mouseLeaveHandler);
-
-  // Add elements to the DOM
-  document.body.appendChild(overlay);
-  document.body.appendChild(exitButton);
-  document.body.appendChild(dragButton);
+  // Add elements to the top controls
+  topControls.appendChild(exitButton);
+  topControls.appendChild(dragButton);
 
   console.debug('PIP controls added to DOM');
 
@@ -243,53 +182,29 @@ function createDraggableOverlay() {
 }
 
 // Store event listener references for cleanup
-let mouseMoveForHoverHandler = null;
-let mouseOutHandler = null;
-let mouseLeaveHandler = null;
+const mouseMoveForHoverHandler = null;
+const mouseOutHandler = null;
+const mouseLeaveHandler = null;
 
 // We're not using global drag event listeners anymore
 
 function removeEventListeners() {
-  // Remove the hover detection event listener
-  if (mouseMoveForHoverHandler) {
-    document.removeEventListener('mousemove', mouseMoveForHoverHandler);
-    mouseMoveForHoverHandler = null;
-  }
-
-  // Remove the mouseout event listener
-  if (mouseOutHandler) {
-    document.removeEventListener('mouseout', mouseOutHandler);
-    mouseOutHandler = null;
-  }
-
-  // Remove the mouseleave event listener
-  if (mouseLeaveHandler) {
-    window.removeEventListener('mouseleave', mouseLeaveHandler);
-    mouseLeaveHandler = null;
-  }
-
-  console.debug('All event listeners removed');
+  // No event listeners to remove now
+  console.debug('No event listeners to remove');
 }
 
 function removeDraggableOverlay() {
   // Remove event listeners
   removeEventListeners();
 
-  // Remove the overlay
-  if (overlay) {
-    overlay.remove();
-    overlay = null;
-    console.debug('Draggable overlay removed from DOM');
-  }
-
-  // Remove the exit button separately
+  // Remove the exit button
   if (exitButton) {
     exitButton.remove();
     exitButton = null;
     console.debug('Exit button removed from DOM');
   }
 
-  // Remove the drag button separately
+  // Remove the drag button
   if (dragButton) {
     dragButton.remove();
     dragButton = null;
