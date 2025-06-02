@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-function createDraggableOverlay() {
+function createPipControls() {
   if (overlay) {
     return; // Overlay already exists
   }
@@ -164,7 +164,7 @@ function createDraggableOverlay() {
     const ev = new Event("toggle-pip")
     document.dispatchEvent(ev);
     // Remove the overlay
-    removeDraggableOverlay();
+    removePipControls();
   });
 
   // Controls are now always visible in PIP mode
@@ -193,7 +193,7 @@ function removeEventListeners() {
   console.debug('No event listeners to remove');
 }
 
-function removeDraggableOverlay() {
+function removePipControls() {
   // Remove event listeners
   removeEventListeners();
 
@@ -229,8 +229,14 @@ document.addEventListener('toggle-pip', (event) => {
 
   // Toggle the draggable overlay
   if (isPipMode) {
-    createDraggableOverlay();
+    createPipControls();
   } else {
-    removeDraggableOverlay();
+    removePipControls();
   }
+
+  // Dispatch pipChanged event to sync with other components
+  const pipChangedEvent = new CustomEvent("pipChanged", {
+    detail: { value: isPipMode }
+  });
+  document.dispatchEvent(pipChangedEvent);
 });
