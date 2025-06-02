@@ -4,7 +4,7 @@ let isPipMode = false;
 // References to UI elements
 let exitButton = null;
 let dragButton = null;
-let pipButton = null;
+let enterPipButton = null;
 
 // Also try to inject on DOMContentLoaded in case the element is present early
 document.addEventListener("DOMContentLoaded", () => {
@@ -58,31 +58,34 @@ function injectPipControls() {
     }
 
     // Create PIP button if it doesn't exist
-    if (!pipButton) {
-        pipButton = document.createElement('button');
-        pipButton.id = 'enter-pip-button';
-        pipButton.textContent = 'Enter Picture In Picture';
-        createButtonStyles(pipButton);
-        pipButton.style.top = '50%';
-        pipButton.style.left = '50%';
-        pipButton.style.transform = 'translate(-50%, -50%)';
+    if (!enterPipButton) {
+        enterPipButton = document.createElement('div');
+        enterPipButton.id = 'enter-pip-button';
+        createButtonStyles(enterPipButton);
+        enterPipButton.style.top = '50%';
+        enterPipButton.style.left = '50%';
+        enterPipButton.style.transform = 'translate(-50%, -50%)';
 
-        pipButton.addEventListener('mouseover', () => {
-            pipButton.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-            pipButton.style.border = '1px solid rgba(255, 255, 255, 0.5)';
+
+
+        enterPipButton.textContent = 'Enter Picture-in-Picture mode';
+
+        enterPipButton.addEventListener('mouseover', () => {
+            enterPipButton.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+            enterPipButton.style.boxShadow = '0 3px 6px rgba(0, 0, 0, 0.5)';
         });
 
-        pipButton.addEventListener('mouseout', () => {
-            pipButton.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-            pipButton.style.border = 'none';
+        enterPipButton.addEventListener('mouseout', () => {
+            enterPipButton.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            enterPipButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.3)';
         });
 
-        pipButton.addEventListener('click', () => {
+        enterPipButton.addEventListener('click', () => {
             const ev = new Event('toggle-pip');
             document.dispatchEvent(ev);
         });
 
-        topControls.appendChild(pipButton);
+        topControls.appendChild(enterPipButton);
     }
 
     // Create exit button if it doesn't exist
@@ -182,8 +185,8 @@ function injectPipControls() {
 }
 
 function updateButtonVisibility() {
-    if (pipButton) {
-        pipButton.style.display = isPipMode ? 'none' : 'unset';
+    if (enterPipButton) {
+        enterPipButton.style.display = isPipMode ? 'none' : 'unset';
     }
     if (exitButton) {
         exitButton.style.display = isPipMode ? 'flex' : 'none';
