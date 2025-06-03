@@ -47,14 +47,22 @@ static PREVIOUS_WINDOW_STATE: Lazy<Mutex<WindowState>> =
 pub fn toggle_pip<R: Runtime>(
     app_handle: AppHandle<R>,
     window_label: Option<String>,
+    value: bool,
 ) -> Result<bool, String> {
     let window = app_handle
         .get_webview_window(window_label.as_deref().unwrap_or("main"))
         .ok_or("Window not found")?;
 
     let is_pip = IS_PIP.load(Ordering::Relaxed);
+    println!("Toggle PIP: {} -> {}", is_pip, value);
 
-    if is_pip {
+    // If the desired state is the same as current state, no need to toggle
+    if is_pip == value {
+        println!("PIP state already matches desired value: {}", value);
+        return Ok(value);
+    }
+
+    if !value {
         // Restore normal view from saved state
         let saved_state = PREVIOUS_WINDOW_STATE.lock().map_err(|e| e.to_string())?;
 
@@ -175,7 +183,7 @@ pub fn toggle_pip<R: Runtime>(
     IS_PIP.store(new_pip_state, Ordering::Relaxed);
 
     // Emit event to frontend
-    let _ = window.emit("pip-state-changed", new_pip_state);
+    let _ = app_handle.emit("pip-state-changed", new_pip_state);
 
     Ok(new_pip_state)
 }
