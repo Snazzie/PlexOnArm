@@ -6,9 +6,26 @@ let exitButton = null;
 let dragButton = null;
 let enterPipButton = null;
 
+// Add a function to get the current PIP state from Tauri
+async function getPipStateFromTauri() {
+    try {
+        if (window.__TAURI_INTERNALS__?.invoke) {
+            const isPip = await window.__TAURI_INTERNALS__.invoke('is_pip_active');
+            console.debug('Got PIP state from Tauri:', isPip);
+            return isPip;
+        }
+    } catch (err) {
+        console.error('Error getting PIP state from Tauri:', err);
+    }
+    // Return false if Tauri invoke fails
+    return false;
+}
+
 // Also try to inject on DOMContentLoaded in case the element is present early
-document.addEventListener("DOMContentLoaded", () => {
-    injectPipControls(); // Keep the initial injection attempt
+document.addEventListener("DOMContentLoaded", async () => {
+    // Get initial PIP state from Tauri
+    isPipMode = await getPipStateFromTauri();
+    injectPipControls();
 
     // Use a MutationObserver to watch for the top controls element
     const observer = new MutationObserver((mutationsList, observer) => {
@@ -19,6 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     '[class^="AudioVideoFullPlayer-topBar"]',
                 );
                 if (topControls) {
+                    console.debug('Top controls element added, injecting pip controls');
+
                     injectPipControls();
                 }
             }
@@ -53,7 +72,7 @@ function createButtonStyles(element) {
 function injectPipControls() {
     const topControls = document.querySelector('[class^="AudioVideoFullPlayer-topBar"]');
     if (!topControls) {
-        console.error('Top controls element not found');
+        console.warn('Plex Top controls element not found, not injecting pip controls');
         return;
     }
 
@@ -65,8 +84,6 @@ function injectPipControls() {
         enterPipButton.style.top = '50%';
         enterPipButton.style.left = '50%';
         enterPipButton.style.transform = 'translate(-50%, -50%)';
-
-
 
         enterPipButton.textContent = 'Enter Picture-in-Picture mode';
 
@@ -219,24 +236,23 @@ document.addEventListener('pipChanged', (event) => {
 });
 
 // Listen for toggle-pip event
-document.addEventListener('toggle-pip', (event) => {
+document.addEventListener('toggle-pip', async (event) => {
     const isOnInitialScreen = document.querySelector('.confirmation-container') !== null;
     if (isOnInitialScreen) {
         console.debug('Ignoring Alt+P on initial screen in overlay script');
         return;
     }
 
-    isPipMode = !isPipMode;
+    // After toggle_pip is invoked in pip_script.js, get the actual state from Tauri
+    setTimeout(async () => {
+        isPipMode = await getPipStateFromTauri();
 
-    if (isPipMode) {
-        injectPipControls();
-    } else {
-        removePipControls();
-    }
+        if (isPipMode) {
+            injectPipControls();
+        } else {
+            removePipControls();
+        }
 
-    // Dispatch pipChanged event to sync with other components
-    const pipChangedEvent = new CustomEvent('pipChanged', {
-        detail: { value: isPipMode }
-    });
-    document.dispatchEvent(pipChangedEvent);
+        updateButtonVisibility();
+    }, 100); // Small delay to ensure toggle_pip has completed
 });
